@@ -157,18 +157,24 @@ invert_family_richness = invert_family_richness %>%
   cbind(invert_filtered_family[,27:45])
 
 invert_family_richness$Group = as.factor(invert_family_richness$Group)
+invert_family_richness$Season = as.factor(invert_family_richness$Season)
 
-invert_rich = lm(invert_family_richness ~ Season + Group, data = invert_family_richness)
+invert_rich = lm(invert_family_richness ~ Season + Group + Preservative, data = invert_family_richness)
 Anova(invert_rich)
-summary(glht(invert_rich,linfct=mcp(Group="Tukey")))
+summary(glht(invert_rich,linfct=mcp(Season="Tukey")))
 
 inv_rich_season = ggboxplot(invert_family_richness, x = "Season",
                      y = "invert_family_richness", color = "Season",
                      add = "jitter", palette = c("gray", "black"),
                      ylab = "Family richness",
+                     title = "Arthopods",
                      add.params = list(fill = "white"))
 inv_rich_season = ggpar(inv_rich_season, legend = "right") + rremove("xlab") + 
-  rremove("x.text") + rremove("legend.title")
+  rremove("x.text") + rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Wet", "Dry")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
 
 inv_rich_group = ggboxplot(invert_family_richness, x = "Group",
                             y = "invert_family_richness", color = "Group",
@@ -192,8 +198,9 @@ plant_family_richness = plant_family_richness %>%
   cbind(plant_filtered_family[,47:65])
 
 plant_family_richness$Group = as.factor(plant_family_richness$Group)
+plant_family_richness$Season = as.factor(plant_family_richness$Season)
 
-plant_rich = lm(plant_family_richness ~ Season + Group, data = plant_family_richness)
+plant_rich = lm(plant_family_richness ~ Season + Group + Preservative, data = plant_family_richness)
 Anova(plant_rich)
 summary(glht(plant_rich,linfct=mcp(Group="Tukey")))
 
@@ -202,6 +209,7 @@ pla_rich_season = ggboxplot(plant_family_richness, x = "Season",
                             y = "plant_family_richness", color = "Season",
                             add = "jitter", palette = c("gray", "black"),
                             ylab = "Family richness",
+                            title = "Plants",
                             add.params = list(fill = "white"))
 pla_rich_season = ggpar(pla_rich_season, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
@@ -229,8 +237,9 @@ vert_family_richness = vert_family_richness %>%
   cbind(vert_filtered_family[,6:24])
 
 vert_family_richness$Group = as.factor(vert_family_richness$Group)
+vert_family_richness$Season = as.factor(vert_family_richness$Season)
 
-vert_rich = lm(vert_family_richness ~ Season + Group, data = vert_family_richness)
+vert_rich = lm(vert_family_richness ~ Season + Group + Preservative, data = vert_family_richness)
 Anova(vert_rich)
 summary(glht(vert_rich,linfct=mcp(Group="Tukey")))
 
@@ -238,6 +247,7 @@ vert_rich_season = ggboxplot(vert_family_richness, x = "Season",
                             y = "vert_family_richness", color = "Season",
                             add = "jitter", palette = c("gray", "black"),
                             ylab = "Family richness",
+                            title = "Vertebrates",
                             add.params = list(fill = "white"))
 vert_rich_season = ggpar(vert_rich_season, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
@@ -277,8 +287,15 @@ vert_div = cbind(vert_filtered_div[,788:806], vert_shannon)
 
 alpha_plant = lm(shannon_plant ~ Season + Group + Preservative, data = plant_div)
 Anova(alpha_plant)
+
+invert_div$Group = as.factor(invert_div$Group)
+invert_div$Season = as.factor(invert_div$Season)
+invert_div$Preservative = as.factor(invert_div$Preservative)
 alpha_invert = lm(shannon_invert ~ Season + Group + Preservative, data = invert_div)
 Anova(alpha_invert)
+summary(glht(alpha_invert,linfct=mcp(Season="Tukey")))
+summary(glht(alpha_invert,linfct=mcp(Preservative="Tukey")))
+
 alpha_vert = lm(shannon_vert ~ Season + Group + Preservative, data = vert_div)
 Anova(alpha_vert)
 
@@ -286,7 +303,6 @@ plant_shan_season = ggboxplot(plant_div, x = "Season",
                              y = "shannon_plant", color = "Season",
                              add = "jitter", palette = c("gray", "black"),
                              ylab = "Shannon diversity",
-                             title = "Plants",
                              add.params = list(fill = "white"))
 plant_shan_season = ggpar(plant_shan_season, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
@@ -295,16 +311,19 @@ invert_shan_season = ggboxplot(invert_div, x = "Season",
                               y = "shannon_invert", color = "Season",
                               add = "jitter", palette = c("gray", "black"),
                               ylab = "Shannon diversity",
-                              title = "Invertebrates",
                               add.params = list(fill = "white"))
 invert_shan_season = ggpar(invert_shan_season, legend = "right") + rremove("xlab") + 
-  rremove("x.text") + rremove("legend.title")
+  rremove("x.text") + rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Wet", "Dry")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
 
 vert_shan_season = ggboxplot(vert_div, x = "Season",
                                y = "shannon_vert", color = "Season",
                                add = "jitter", palette = c("gray", "black"),
                                ylab = "Shannon diversity",
-                               title = "Vertebrates",
                                add.params = list(fill = "white"))
 vert_shan_season = ggpar(vert_shan_season, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
@@ -320,7 +339,6 @@ plant_shan_group = ggboxplot(plant_div, x = "Group",
                               y = "shannon_plant", color = "Group",
                               add = "jitter", palette = "Set1",
                               ylab = "Shannon diversity",
-                              title = "Plants",
                               add.params = list(fill = "white"))
 plant_shan_group = ggpar(plant_shan_group, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
@@ -329,16 +347,14 @@ invert_shan_group = ggboxplot(invert_div, x = "Group",
                                y = "shannon_invert", color = "Group",
                                add = "jitter", palette = "Set1",
                                ylab = "Shannon diversity",
-                               title = "Invertebrates",
                                add.params = list(fill = "white"))
 invert_shan_group = ggpar(invert_shan_group, legend = "right") + rremove("xlab") + 
-  rremove("x.text") + rremove("legend.title")
+  rremove("x.text") + rremove("legend.title") 
 
 vert_shan_group = ggboxplot(vert_div, x = "Group",
                              y = "shannon_vert", color = "Group",
                              add = "jitter", palette = "Set1",
                              ylab = "Shannon diversity",
-                             title = "Vertebrates",
                              add.params = list(fill = "white"))
 vert_shan_group = ggpar(vert_shan_group, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
@@ -348,6 +364,24 @@ ggarrange(plant_shan_group, invert_shan_group, vert_shan_group, ncol = 1, nrow=3
           common.legend = T, legend = "right", align = "h", 
           labels = c("A", "B", "C"))
 
+dev.off()
+
+#Diversity graphs ----
+
+tiff(file = "diversity_combo.tif", res = 300, width = 20, height = 12,
+     units = "in")
+plot1 = ggarrange(inv_rich_season, invert_shan_season, vert_rich_season, 
+                  vert_shan_season,pla_rich_season, plant_shan_season,  
+                  ncol = 2, nrow = 3, common.legend = T, legend = "right",
+                  align = "hv", labels = c("A", "B", "E", "F",
+                                           "I", "J"))
+plot2 = ggarrange(inv_rich_group, invert_shan_group, vert_rich_group, 
+                  vert_shan_group, pla_rich_group, plant_shan_group, 
+                  ncol = 2, nrow = 3, common.legend = T, legend = "right",
+                  align = "hv", labels = c("C", "D", "G", "H", 
+                                           "K", "L"))
+ggarrange(plot1, plot2, ncol = 2, nrow = 1, widths = c(2,3),
+          align = "hv")
 dev.off()
 
 
