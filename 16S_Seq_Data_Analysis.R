@@ -1,11 +1,11 @@
 #Set up environment----
 
-setwd("/Users/elizabethmallott/Dropbox/Projects/Gut_microbiome/Caatinga_marmosets/16S_results")
+setwd("/Users/mallott/Dropbox/Projects/Gut_microbiome/Caatinga_marmosets/16S_results")
 
 #Import data----
 unweighted = as.dist(read.table("unweighted-distance-matrix.tsv", header = T))
 weighted = as.dist(read.table("weighted-distance-matrix.tsv", header = T))
-metadata = read.csv("caatinga_metadata_r_10000.csv", header=T)
+metadata = read.csv("caatinga_metadata_r_8956.csv", header=T)
 
 #Permanovas----
 library(vegan)
@@ -18,8 +18,6 @@ anova(betadisper(unweighted, group = metadata$Age))
 anova(betadisper(unweighted, group = metadata$Sex))
 anova(betadisper(unweighted, group = metadata$Preservative))
 
-adonis2(unweighted~Season+Group+Preservative, data=metadata, 
-        by = "margin", permutations = 5000)
 adonis2(weighted~Season+Group+Age+Sex+Preservative, data=metadata, 
         by = "margin", permutations = 5000)
 anova(betadisper(weighted, group = metadata$Season))
@@ -28,12 +26,9 @@ anova(betadisper(weighted, group = metadata$Age))
 anova(betadisper(weighted, group = metadata$Sex))
 anova(betadisper(weighted, group = metadata$Preservative))
 
-adonis2(weighted~Season+Group+Preservative, data=metadata, 
-        by = "margin", permutations = 5000)
-
 #Alpha diversity----
 faith = read.table("faithpd.tsv", header=T)
-otus = read.table("observed-otus.tsv", header = T)
+otus = read.table("observed_features.tsv", header = T)
 shannon = read.table("shannon.tsv", header = T)
 
 library(tidyverse)
@@ -60,23 +55,24 @@ Anova(f_full)
 summary(glht(f_full,linfct=mcp(Season="Tukey")))
 summary(glht(f_full,linfct=mcp(Preservative="Tukey")))
 
-o = lme(fixed=observed_otus~Season + Age + Sex + Preservative, 
+o = lme(fixed=observed_features~Season + Age + Sex + Preservative, 
         data=alpha, random = ~1|Group)
 summary(o)
 Anova(o)
 
-o_full = lm(observed_otus ~ Season+Group+Age+Sex+Preservative, 
+o_full = lm(observed_features ~ Season+Group+Age+Sex+Preservative, 
             data = alpha)
 summary(o_full)
 Anova(o_full)
 summary(glht(o_full,linfct=mcp(Group="Tukey")))
+summary(glht(o_full,linfct=mcp(Sex="Tukey")))
 
-s = lme(fixed=shannon~Season + Age + Sex + Preservative, 
+s = lme(fixed=shannon_entropy~Season + Age + Sex + Preservative, 
         data=alpha, random = ~1|Group)
 summary(s)
 Anova(s)
 
-s_full = lm(shannon ~ Season+Group+Age+Sex+Preservative, 
+s_full = lm(shannon_entropy ~ Season+Group+Age+Sex+Preservative, 
             data = alpha)
 summary(s_full)
 Anova(s_full)
@@ -95,16 +91,21 @@ plot1 = ggpar(plot1, legend = "right") + rremove("xlab") +
   rremove("legend.title")
 
 plot2 = ggboxplot(alpha, x = "Group", 
-                  y = "observed_otus", color = "Group", 
+                  y = "observed_features", color = "Group", 
                   palette = "Set1", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Observed ASVs") 
 plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
   rremove("x.ticks")  + rremove("x.text") + 
-  rremove("legend.title") 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Princess", "House"),
+                                        c("Princess", "Key")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "ns")))
 
 plot3 = ggboxplot(alpha, x = "Group", 
-                  y = "shannon", color = "Group", 
+                  y = "shannon_entropy", color = "Group", 
                   palette = "Set1", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Shannon Diversity") 
@@ -112,14 +113,45 @@ plot3 = ggpar(plot3, legend = "right") + rremove("xlab") +
   rremove("x.ticks")  + rremove("x.text") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
-                     comparisons = list(c("Princess", "Key")),
+                     comparisons = list(c("Princess", "House"),
+                                        c("Princess", "Key")),
                      symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
                                         symbols = c("*", "*", "*", "*", "ns")))
 
-tiff(file="alpha_combined.tif", res=300, width=15, height=4, units="in")
-ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
-          common.legend = T, align = "h", legend = "right",
-          labels = c("A", "B", "C"))
+plot4 = ggboxplot(alpha, x = "Sex", 
+                  y = "faith_pd", color = "Sex", 
+                  palette = "Set2", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity") 
+plot4 = ggpar(plot4, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+plot5 = ggboxplot(alpha, x = "Sex", 
+                  y = "observed_features", color = "Sex", 
+                  palette = "Set2", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot5 = ggpar(plot5, legend = "right") + rremove("xlab") + 
+  rremove("x.ticks")  + rremove("x.text") + 
+  rremove("legend.title")
+
+plot6 = ggboxplot(alpha, x = "Sex", 
+                  y = "shannon_entropy", color = "Sex", 
+                  palette = "Set2", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot6 = ggpar(plot6, legend = "right") + rremove("xlab") + 
+  rremove("x.ticks")  + rremove("x.text") + 
+  rremove("legend.title")
+
+tiff(file="alpha_combined.tif", res=300, width=15, height=9, units="in")
+ggarrange(ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+          common.legend = T, align = "h", legend = "right"),
+          ggarrange(plot4, plot5, plot6, nrow = 1, ncol = 3, 
+                    common.legend = T, align = "h", legend = "right"),
+          nrow = 2, ncol = 1, align = "hv",
+          labels = c("A", "B"))
 dev.off()
 
 #Phyla differences----
@@ -1272,11 +1304,11 @@ w_taxa <- ggplot(mds_otus_weighted_points2,
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.418, R<sup>2</sup> = 1.1%<br>
-           <b>Group: p < 0.001, R<sup>2</sup> = 24.2%</b><br>
-           Age: p = 0.063, R<sup>2</sup> = 8.3%<br>
-           Sex: p = 0.850, R<sup>2</sup> = 1.2%<br>
-           Preservative: p = 0.359, R<sup>2</sup> = 1.2%", 
+           label = "Season: p = 0.115, R<sup>2</sup> = 2.3%<br>
+           <b>Group: p < 0.001, R<sup>2</sup> = 24.8%</b><br>
+           Age: p = 0.205, R<sup>2</sup> = 6.4%<br>
+           Sex: p = 0.171, R<sup>2</sup> = 3.6%<br>
+           Preservative: p = 0.162, R<sup>2</sup> = 2.0%", 
            x = -Inf, y = Inf, size = 5,
            hjust = 0, vjust = 1)
 w_taxa
@@ -1297,11 +1329,11 @@ uw_taxa <- ggplot(mds_otus_unweighted_points2,
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.277, R<sup>2</sup> = 2.7%<br>
-           <b>Group: p = 0.007, R<sup>2</sup> = 16.2%</b><br>
-           Age: p = 0.574, R<sup>2</sup> = 5.5%<br>
-           Sex: p = 0.425, R<sup>2</sup> = 3.0%<br>
-           Preservative: p = 0.623, R<sup>2</sup> = 1.2%", 
+           label = "<b>Season: p = 0.017, R<sup>2</sup> = 3.0%<br>
+           Group: p < 0.001, R<sup>2</sup> = 18.3%</b><br>
+           Age: p = 0.490, R<sup>2</sup> = 5.0%<br>
+           Sex: p = 0.290, R<sup>2</sup> = 2.9%<br>
+           <b>Preservative: p = 0.001, R<sup>2</sup> = 4.7%</b>", 
            x = -Inf, 
            y = Inf, 
            size = 5, hjust = 0, vjust = 1)
