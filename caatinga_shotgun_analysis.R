@@ -1,6 +1,6 @@
 #Set up environment ----
 
-setwd("/Users/elizabethmallott/Dropbox/Projects/Gut_microbiome/Caatinga_marmosets/shotgun")
+setwd("/Users/mallott/Dropbox/Projects/Gut_microbiome/Caatinga_marmosets/shotgun")
 
 #Permanovas ----
 
@@ -17,9 +17,17 @@ metadata_pa = read.csv("caatinga_shotgun_metadata.csv", header = T)
 adonis2(bray_gene ~ Season + Group + Sex + Preservative, 
         data=metadata_gene, 
         by = "margin", permutations = 4999)
+adonis2(bray_gene ~ Season + Human_food + Sex + Preservative, 
+        data=metadata_gene, 
+        by = "margin", permutations = 4999)
+adonis2(bray_gene ~ Season + Domestic_animal + Sex + Preservative, 
+        data=metadata_gene, 
+        by = "margin", permutations = 4999)
 
 anova(betadisper(bray_gene, group = metadata_gene$Season))
 anova(betadisper(bray_gene, group = metadata_gene$Group))
+anova(betadisper(bray_gene, group = metadata_gene$Human_food))
+anova(betadisper(bray_gene, group = metadata_gene$Domestic_animal))
 anova(betadisper(bray_gene, group = metadata_gene$Sex))
 anova(betadisper(bray_gene, group = metadata_gene$Preservative))
 
@@ -30,9 +38,17 @@ pairwise.adonis(bray_gene, factors = metadata_gene$Group,
 adonis2(jaccard_gene ~ Season + Group + Sex +  Preservative, 
         data=metadata_gene, 
         by = "margin", permutations = 4999)
+adonis2(jaccard_gene ~ Season + Human_food + Sex +  Preservative, 
+        data=metadata_gene, 
+        by = "margin", permutations = 4999)
+adonis2(jaccard_gene ~ Season + Domestic_animal + Sex +  Preservative, 
+        data=metadata_gene, 
+        by = "margin", permutations = 4999)
 
 anova(betadisper(jaccard_gene, group = metadata_gene$Season))
 anova(betadisper(jaccard_gene, group = metadata_gene$Group))
+anova(betadisper(jaccard_gene, group = metadata_gene$Human_food))
+anova(betadisper(jaccard_gene, group = metadata_gene$Domestic_animal))
 anova(betadisper(jaccard_gene, group = metadata_gene$Sex))
 anova(betadisper(jaccard_gene, group = metadata_gene$Preservative))
 
@@ -43,9 +59,17 @@ pairwise.adonis(jaccard_gene, factors = metadata_gene$Group,
 adonis2(bray_pa ~ Season + Group + Sex +  Preservative, 
         data=metadata_pa, 
         by = "margin", permutations = 4999)
+adonis2(bray_pa ~ Season + Human_food + Sex +  Preservative, 
+        data=metadata_pa, 
+        by = "margin", permutations = 4999)
+adonis2(bray_pa ~ Season + Domestic_animal + Sex +  Preservative, 
+        data=metadata_pa, 
+        by = "margin", permutations = 4999)
 
 anova(betadisper(bray_pa, group = metadata_pa$Season))
 anova(betadisper(bray_pa, group = metadata_pa$Group))
+anova(betadisper(bray_pa, group = metadata_pa$Human_food))
+anova(betadisper(bray_pa, group = metadata_pa$Domestic_animal))
 anova(betadisper(bray_pa, group = metadata_pa$Sex))
 anova(betadisper(bray_pa, group = metadata_pa$Preservative))
 
@@ -56,9 +80,17 @@ pairwise.adonis(bray_pa, factors = metadata_pa$Group,
 adonis2(jaccard_pa ~ Season + Group + Sex +  Preservative, 
         data=metadata_pa, 
         by = "margin", permutations = 4999)
+adonis2(jaccard_pa ~ Season + Human_food + Sex +  Preservative, 
+        data=metadata_pa, 
+        by = "margin", permutations = 4999)
+adonis2(jaccard_pa ~ Season + Domestic_animal + Sex +  Preservative, 
+        data=metadata_pa, 
+        by = "margin", permutations = 4999)
 
 anova(betadisper(jaccard_pa, group = metadata_pa$Season))
 anova(betadisper(jaccard_pa, group = metadata_pa$Group))
+anova(betadisper(jaccard_pa, group = metadata_pa$Human_food))
+anova(betadisper(jaccard_pa, group = metadata_pa$Domestic_animal))
 anova(betadisper(jaccard_pa, group = metadata_pa$Sex))
 anova(betadisper(jaccard_pa, group = metadata_pa$Preservative))
 
@@ -249,30 +281,79 @@ summary(sg)
 Anova(sg)
 summary(glht(sg,linfct=mcp(Season="Tukey")))
 
+sgh <- lm(shannon_entropy ~ Season + Human_food + Sex + Preservative, data = alpha_gene)
+summary(sgh)
+Anova(sgh)
+
+sga <- lm(shannon_entropy ~ Season + Domestic_animal + Sex + Preservative, data = alpha_gene)
+summary(sga)
+Anova(sga)
+
 eg <- lm(pielou_evenness ~ Season + Group + Sex + Preservative, data = alpha_gene)
 summary(eg)
 Anova(eg)
 summary(glht(eg,linfct=mcp(Season="Tukey")))
+
+egh <- lm(pielou_evenness ~ Season + Human_food + Sex + Preservative, data = alpha_gene)
+summary(egh)
+Anova(egh)
+
+ega <- lm(pielou_evenness ~ Season + Domestic_animal + Sex + Preservative, data = alpha_gene)
+summary(ega)
+Anova(ega)
 
 og <- lm(observed_features ~ Season + Group + Sex + Preservative, data = alpha_gene)
 summary(og)
 Anova(og)
 summary(glht(og,linfct=mcp(Group="Tukey")))
 
+ogh <- lm(observed_features ~ Season + Human_food + Sex + Preservative, data = alpha_gene)
+summary(ogh)
+Anova(ogh)
+
+oga <- lm(observed_features ~ Season + Domestic_animal + Sex + Preservative, data = alpha_gene)
+summary(oga)
+Anova(oga)
+
 sp <- lm(shannon_entropy ~ Season + Group + Sex + Preservative, data = alpha_pa)
 summary(sp)
 Anova(sp)
 summary(glht(sp,linfct=mcp(Season="Tukey")))
+
+sph <- lm(shannon_entropy ~ Season + Human_food + Sex + Preservative, data = alpha_pa)
+summary(sph)
+Anova(sph)
+
+spa <- lm(shannon_entropy ~ Season + Domestic_animal + Sex + Preservative, data = alpha_pa)
+summary(spa)
+Anova(spa)
 
 ep <- lm(pielou_evenness ~ Season + Group + Sex + Preservative, data = alpha_pa)
 summary(ep)
 Anova(ep)
 summary(glht(ep,linfct=mcp(Season="Tukey")))
 
+eph <- lm(pielou_evenness ~ Season + Human_food + Sex + Preservative, data = alpha_pa)
+summary(eph)
+Anova(eph)
+
+epa <- lm(pielou_evenness ~ Season + Domestic_animal + Sex + Preservative, data = alpha_pa)
+summary(epa)
+Anova(epa)
+
 op <- lm(observed_features ~ Season + Group + Sex + Preservative, data = alpha_pa)
 summary(op)
 Anova(op)
 summary(glht(op,linfct=mcp(Season="Tukey")))
+
+oph <- lm(observed_features ~ Season + Human_food + Sex + Preservative, data = alpha_pa)
+summary(oph)
+Anova(oph)
+
+opa <- lm(observed_features ~ Season + Domestic_animal + Sex + Preservative, data = alpha_pa)
+summary(opa)
+Anova(opa)
+summary(glht(opa,linfct=mcp(Season="Tukey")))
 
 #Diversity plots ----
 library(ggpubr)

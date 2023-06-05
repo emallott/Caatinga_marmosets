@@ -12,16 +12,28 @@ library(vegan)
 
 adonis2(unweighted~Season+Group+Age+Sex+Preservative, data=metadata, 
         by = "margin", permutations = 5000)
+adonis2(unweighted~Season+Human_food+Age+Sex+Preservative, data=metadata, 
+        by = "margin", permutations = 5000)
+adonis2(unweighted~Season+Domestic_animal+Age+Sex+Preservative, data=metadata, 
+        by = "margin", permutations = 5000)
 anova(betadisper(unweighted, group = metadata$Season))
 anova(betadisper(unweighted, group = metadata$Group))
+anova(betadisper(unweighted, group = metadata$Human_food))
+anova(betadisper(unweighted, group = metadata$Domestic_animal))
 anova(betadisper(unweighted, group = metadata$Age))
 anova(betadisper(unweighted, group = metadata$Sex))
 anova(betadisper(unweighted, group = metadata$Preservative))
 
 adonis2(weighted~Season+Group+Age+Sex+Preservative, data=metadata, 
         by = "margin", permutations = 5000)
+adonis2(weighted~Season+Human_food+Age+Sex+Preservative, data=metadata, 
+        by = "margin", permutations = 5000)
+adonis2(weighted~Season+Domestic_animal+Age+Sex+Preservative, data=metadata, 
+        by = "margin", permutations = 5000)
 anova(betadisper(weighted, group = metadata$Season))
 anova(betadisper(weighted, group = metadata$Group))
+anova(betadisper(weighted, group = metadata$Human_food))
+anova(betadisper(weighted, group = metadata$Domestic_animal))
 anova(betadisper(weighted, group = metadata$Age))
 anova(betadisper(weighted, group = metadata$Sex))
 anova(betadisper(weighted, group = metadata$Preservative))
@@ -38,6 +50,8 @@ library(car)
 
 alpha = inner_join(metadata, faith, by = "SampleID") %>% inner_join(otus, by = "SampleID") %>% inner_join(shannon, by = "SampleID")
 alpha$Group = as.factor(alpha$Group)
+alpha$Human_food = as.factor(alpha$Human_food)
+alpha$Domestic_animal = as.factor(alpha$Domestic_animal)
 alpha$Season = as.factor(alpha$Season)
 alpha$Age = as.factor(alpha$Age)
 alpha$Sex = as.factor(alpha$Sex)
@@ -55,6 +69,18 @@ Anova(f_full)
 summary(glht(f_full,linfct=mcp(Season="Tukey")))
 summary(glht(f_full,linfct=mcp(Preservative="Tukey")))
 
+f_full_human = lm(faith_pd ~ Season+Human_food+Age+Sex+Preservative, 
+            data = alpha)
+summary(f_full_human)
+Anova(f_full_human)
+
+f_full_animal = lm(faith_pd ~ Season+Domestic_animal+Age+Sex+Preservative, 
+                  data = alpha)
+summary(f_full_animal)
+Anova(f_full_animal)
+summary(glht(f_full_animal,linfct=mcp(Season="Tukey")))
+summary(glht(f_full_animal,linfct=mcp(Preservative="Tukey")))
+
 o = lme(fixed=observed_features~Season + Age + Sex + Preservative, 
         data=alpha, random = ~1|Group)
 summary(o)
@@ -67,6 +93,16 @@ Anova(o_full)
 summary(glht(o_full,linfct=mcp(Group="Tukey")))
 summary(glht(o_full,linfct=mcp(Sex="Tukey")))
 
+o_human = lm(observed_features ~ Season+Human_food+Age+Sex+Preservative, 
+            data = alpha)
+summary(o_human)
+Anova(o_human)
+
+o_full_animal = lm(observed_features ~ Season+Domestic_animal+Age+Sex+Preservative, 
+            data = alpha)
+summary(o_full_animal)
+Anova(o_full_animal)
+
 s = lme(fixed=shannon_entropy~Season + Age + Sex + Preservative, 
         data=alpha, random = ~1|Group)
 summary(s)
@@ -78,6 +114,19 @@ summary(s_full)
 Anova(s_full)
 summary(glht(s_full,linfct=mcp(Group="Tukey")))
 summary(glht(s_full,linfct=mcp(Sex="Tukey")))
+
+s_full_human = lm(shannon_entropy ~ Season+Human_food+Age+Sex+Preservative, 
+            data = alpha)
+summary(s_full_human)
+Anova(s_full_human)
+summary(glht(s_full_human,linfct=mcp(Preservative="Tukey")))
+
+s_full_animal = lm(shannon_entropy ~ Season+Domestic_animal+Age+Sex+Preservative, 
+            data = alpha)
+summary(s_full_animal)
+Anova(s_full_animal)
+summary(glht(s_full_animal,linfct=mcp(Group="Tukey")))
+summary(glht(s_full_animal,linfct=mcp(Sex="Tukey")))
 
 library(ggpubr)
 
