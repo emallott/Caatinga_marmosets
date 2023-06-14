@@ -22,6 +22,11 @@ plant_meta = inner_join(metadata, plants, by = c("SampleID" = "ID"))
 plant_relab = decostand(plant_meta[,17:61], method = "total", MARGIN = 1)
 bray_plant = vegdist(plant_relab, method = "bray")
 
+verts = read.csv("diet_data/oldvert_marmoset_filtered_family_noprimates.csv", header=T)
+vert_meta = inner_join(metadata, verts, by = c("SampleID" = "ID"))
+vert_relab = decostand(vert_meta[,17:20], method = "total", MARGIN = 1)
+bray_vert = vegdist(vert_relab, method = "bray")
+
 ###16S-inverts----
 mantel(bray_invert, bray_16S, method = "spearman", permutations = 499)
 

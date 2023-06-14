@@ -7,8 +7,14 @@ unweighted = as.dist(read.table("unweighted-distance-matrix.tsv", header = T))
 weighted = as.dist(read.table("weighted-distance-matrix.tsv", header = T))
 metadata = read.csv("caatinga_metadata_r_8956.csv", header=T)
 
+unweighted_nounk = as.dist(read.table("unweighted-distance-matrix-nounk.tsv", header = T))
+weighted_nounk = as.dist(read.table("weighted-distance-matrix-nounk.tsv", header = T))
+metadata_nounk = read.csv("caatinga_metadata_r_8956_nounk.csv", header=T)
+
 #Permanovas----
 library(vegan)
+
+set.seed(1018)
 
 adonis2(unweighted~Season+Group+Age+Sex+Preservative, data=metadata, 
         by = "margin", permutations = 5000)
@@ -38,6 +44,34 @@ anova(betadisper(weighted, group = metadata$Age))
 anova(betadisper(weighted, group = metadata$Sex))
 anova(betadisper(weighted, group = metadata$Preservative))
 
+adonis2(unweighted_nounk~Season+Group+Age+Sex+Preservative, data=metadata_nounk, 
+        by = "margin", permutations = 5000)
+adonis2(unweighted_nounk~Season+Human_food+Age+Sex+Preservative, data=metadata_nounk, 
+        by = "margin", permutations = 5000)
+adonis2(unweighted_nounk~Season+Domestic_animal+Age+Sex+Preservative, data=metadata_nounk, 
+        by = "margin", permutations = 5000)
+anova(betadisper(unweighted_nounk, group = metadata_nounk$Season))
+anova(betadisper(unweighted_nounk, group = metadata_nounk$Group))
+anova(betadisper(unweighted_nounk, group = metadata_nounk$Human_food))
+anova(betadisper(unweighted_nounk, group = metadata_nounk$Domestic_animal))
+anova(betadisper(unweighted_nounk, group = metadata_nounk$Age))
+anova(betadisper(unweighted_nounk, group = metadata_nounk$Sex))
+anova(betadisper(unweighted_nounk, group = metadata_nounk$Preservative))
+
+adonis2(weighted_nounk~Season+Group+Age+Sex+Preservative, data=metadata_nounk, 
+        by = "margin", permutations = 5000)
+adonis2(weighted_nounk~Season+Human_food+Age+Sex+Preservative, data=metadata_nounk, 
+        by = "margin", permutations = 5000)
+adonis2(weighted_nounk~Season+Domestic_animal+Age+Sex+Preservative, data=metadata_nounk, 
+        by = "margin", permutations = 5000)
+anova(betadisper(weighted_nounk, group = metadata_nounk$Season))
+anova(betadisper(weighted_nounk, group = metadata_nounk$Group))
+anova(betadisper(weighted_nounk, group = metadata_nounk$Human_food))
+anova(betadisper(weighted_nounk, group = metadata_nounk$Domestic_animal))
+anova(betadisper(weighted_nounk, group = metadata_nounk$Age))
+anova(betadisper(weighted_nounk, group = metadata_nounk$Sex))
+anova(betadisper(weighted_nounk, group = metadata_nounk$Preservative))
+
 #Alpha diversity----
 faith = read.table("faithpd.tsv", header=T)
 otus = read.table("observed_features.tsv", header = T)
@@ -55,7 +89,11 @@ alpha$Domestic_animal = as.factor(alpha$Domestic_animal)
 alpha$Season = as.factor(alpha$Season)
 alpha$Age = as.factor(alpha$Age)
 alpha$Sex = as.factor(alpha$Sex)
+alpha$AgeSex = as.factor(alpha$AgeSex)
 alpha$Preservative = as.factor(alpha$Preservative)
+
+alpha_nounk = alpha %>% 
+  filter(Sex != "Unknown" & Age != "Unknown")
 
 f = lme(fixed=faith_pd~Season + Age + Sex + Preservative, data=alpha, random = ~1|Group)
 summary(f)
@@ -68,6 +106,27 @@ summary(f_full)
 Anova(f_full)
 summary(glht(f_full,linfct=mcp(Season="Tukey")))
 summary(glht(f_full,linfct=mcp(Preservative="Tukey")))
+
+f_full_nounk = lm(faith_pd ~ Season+Group+Age+Sex+Preservative, 
+            data = alpha_nounk)
+summary(f_full_nounk)
+Anova(f_full_nounk)
+summary(glht(f_full_nounk,linfct=mcp(Season="Tukey")))
+summary(glht(f_full_nounk,linfct=mcp(Preservative="Tukey")))
+
+faith_preservative_summary = alpha_nounk %>% 
+  group_by(Preservative) %>% 
+  summarize(average = mean(faith_pd))
+faith_season_summary = alpha_nounk %>% 
+  group_by(Season) %>% 
+  summarize(average = mean(faith_pd))
+
+f_full_nounk_agesex = lm(faith_pd ~ Season+Group+AgeSex+Preservative, 
+                  data = alpha_nounk)
+summary(f_full_nounk_agesex)
+Anova(f_full_nounk_agesex)
+summary(glht(f_full_nounk_agesex,linfct=mcp(Season="Tukey")))
+summary(glht(f_full_nounk_agesex,linfct=mcp(Preservative="Tukey")))
 
 f_full_human = lm(faith_pd ~ Season+Human_food+Age+Sex+Preservative, 
             data = alpha)
@@ -93,6 +152,18 @@ Anova(o_full)
 summary(glht(o_full,linfct=mcp(Group="Tukey")))
 summary(glht(o_full,linfct=mcp(Sex="Tukey")))
 
+o_full_nounk = lm(observed_features ~ Season+Group+Age+Sex+Preservative, 
+            data = alpha_nounk)
+summary(o_full_nounk)
+Anova(o_full_nounk)
+
+o_full_nounk_agesex = lm(observed_features ~ Season+Group+AgeSex+Preservative, 
+                  data = alpha_nounk)
+summary(o_full_nounk_agesex)
+Anova(o_full_nounk_agesex)
+summary(glht(o_full_nounk_agesex,linfct=mcp(Group="Tukey")))
+summary(glht(o_full_nounk_agesex,linfct=mcp(Sex="Tukey")))
+
 o_human = lm(observed_features ~ Season+Human_food+Age+Sex+Preservative, 
             data = alpha)
 summary(o_human)
@@ -115,6 +186,12 @@ Anova(s_full)
 summary(glht(s_full,linfct=mcp(Group="Tukey")))
 summary(glht(s_full,linfct=mcp(Sex="Tukey")))
 
+s_full_nounk = lm(shannon_entropy ~ Season+Group+Age+Sex+Preservative, 
+            data = alpha_nounk)
+summary(s_full_nounk)
+Anova(s_full_nounk)
+summary(glht(s_full_nounk,linfct=mcp(Group="Tukey")))
+
 s_full_human = lm(shannon_entropy ~ Season+Human_food+Age+Sex+Preservative, 
             data = alpha)
 summary(s_full_human)
@@ -130,77 +207,137 @@ summary(glht(s_full_animal,linfct=mcp(Sex="Tukey")))
 
 library(ggpubr)
 
-plot1 = ggboxplot(alpha, x = "Group", 
+plot1 = ggboxplot(alpha_nounk, x = "Group", 
                   y = "faith_pd", color = "Group", 
                   palette = "Set1", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Faith's Phylogenetic Diversity") 
-plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+plot1 = ggpar(plot1, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title")
 
-plot2 = ggboxplot(alpha, x = "Group", 
+plot2 = ggboxplot(alpha_nounk, x = "Group", 
                   y = "observed_features", color = "Group", 
                   palette = "Set1", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Observed ASVs") 
-plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+plot2 = ggpar(plot2, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") +  
   rremove("x.ticks")  + rremove("x.text") + 
-  rremove("legend.title") + 
-  stat_compare_means(label = "p.signif", 
-                     comparisons = list(c("Princess", "House"),
-                                        c("Princess", "Key")),
-                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
-                                        symbols = c("*", "*", "*", "*", "ns")))
+  rremove("legend.title")
 
-plot3 = ggboxplot(alpha, x = "Group", 
+plot3 = ggboxplot(alpha_nounk, x = "Group", 
                   y = "shannon_entropy", color = "Group", 
                   palette = "Set1", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Shannon Diversity") 
-plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+plot3 = ggpar(plot3, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") +  
   rremove("x.ticks")  + rremove("x.text") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
-                     comparisons = list(c("Princess", "House"),
-                                        c("Princess", "Key")),
+                     comparisons = list(c("Princess", "House")),
                      symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
                                         symbols = c("*", "*", "*", "*", "ns")))
 
-plot4 = ggboxplot(alpha, x = "Sex", 
-                  y = "faith_pd", color = "Sex", 
-                  palette = "Set2", add = "jitter", 
+plot4 = ggboxplot(alpha_nounk, x = "Season", 
+                  y = "faith_pd", color = "Season", 
+                  palette = c("black","darkgray"), add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Faith's Phylogenetic Diversity") 
-plot4 = ggpar(plot4, legend = "right") + rremove("xlab") + 
+plot4 = ggpar(plot4, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") +  
   rremove("x.text") + rremove("x.ticks") + 
-  rremove("legend.title")
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Dry", "Wet")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.8, 1),
+                                        symbols = c("*", "*", "*", "*", "ns")))
 
-plot5 = ggboxplot(alpha, x = "Sex", 
-                  y = "observed_features", color = "Sex", 
-                  palette = "Set2", add = "jitter", 
+plot5 = ggboxplot(alpha_nounk, x = "Season", 
+                  y = "observed_features", color = "Season", 
+                  palette = c("black","darkgray"), add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Observed ASVs") 
-plot5 = ggpar(plot5, legend = "right") + rremove("xlab") + 
+plot5 = ggpar(plot5, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") + 
   rremove("x.ticks")  + rremove("x.text") + 
   rremove("legend.title")
 
-plot6 = ggboxplot(alpha, x = "Sex", 
-                  y = "shannon_entropy", color = "Sex", 
-                  palette = "Set2", add = "jitter", 
+plot6 = ggboxplot(alpha_nounk, x = "Season", 
+                  y = "shannon_entropy", color = "Season", 
+                  palette = c("black","darkgray"), add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Shannon Diversity") 
-plot6 = ggpar(plot6, legend = "right") + rremove("xlab") + 
+plot6 = ggpar(plot6, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") + 
+  rremove("x.ticks")  + rremove("x.text") + 
+  rremove("legend.title")
+
+plot7 = ggboxplot(alpha_nounk, x = "Preservative", 
+                  y = "faith_pd", color = "Preservative", 
+                  palette = "Dark2", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity") 
+plot7 = ggpar(plot7, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") +  
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Ethanol", "RNAlater")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "ns")))
+
+plot8 = ggboxplot(alpha_nounk, x = "Preservative", 
+                  y = "observed_features", color = "Preservative", 
+                  palette = "Dark2", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot8 = ggpar(plot8, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") + 
+  rremove("x.ticks")  + rremove("x.text") + 
+  rremove("legend.title")
+
+plot9 = ggboxplot(alpha_nounk, x = "Preservative", 
+                  y = "shannon_entropy", color = "Preservative", 
+                  palette = "Dark2", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot9 = ggpar(plot9, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + 
+  rremove("xlab") + 
   rremove("x.ticks")  + rremove("x.text") + 
   rremove("legend.title")
 
 tiff(file="alpha_combined.tif", res=300, width=15, height=9, units="in")
-ggarrange(ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+alpha_plot = ggarrange(ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
           common.legend = T, align = "h", legend = "right"),
-          ggarrange(plot4, plot5, plot6, nrow = 1, ncol = 3, 
-                    common.legend = T, align = "h", legend = "right"),
+          ggarrange(ggarrange(plot4, plot5, plot6, 
+                    nrow = 1, ncol = 3, 
+                    common.legend = T, align = "h", 
+                    legend = "right"),
+                    ggarrange(plot7, plot8, plot9, 
+                              nrow = 1, ncol = 3, 
+                              common.legend = T, align = "h", 
+                              legend = "right"),
+                    nrow = 1, ncol = 2,
+                    align = "h", labels = c("B", "C")),
           nrow = 2, ncol = 1, align = "hv",
-          labels = c("A", "B"))
+          labels = c("A", ""))
+dev.off()
+
+setEPS()
+postscript(file="alpha_combined.eps", width=15, height=9, paper = "special")
+alpha_plot
 dev.off()
 
 #Phyla differences----
@@ -1017,13 +1154,17 @@ write_csv(fdr_ancom_g_prinroa, "Diff_abund_group_phyla_prinroa.csv")
 #Phyla graphs----
 library(ggpubr)
 
+phyla_t = read_tsv("phyla-table-full-t.txt")
+phyla_meta = metadata_full %>% inner_join(phyla_t)
+
 bact = ggboxplot(phyla_meta, x = "Group", 
                   y = "Bacteroidetes", color = "Group", 
                   palette = "Set1", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Relative Abundance", 
                  title = "Bacteroidetes") 
-bact = ggpar(bact, legend = "right") + rremove("xlab") + 
+bact = ggpar(bact, legend = "right", font.y = 16,
+             font.legend = 16, font.ytickslab = 14) + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1037,7 +1178,8 @@ cyan = ggboxplot(phyla_meta, x = "Group",
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "Cyanobacteria") 
-cyan = ggpar(cyan, legend = "right") + rremove("xlab") + 
+cyan = ggpar(cyan, legend = "right", font.y = 16,
+             font.legend = 16, font.ytickslab = 14) + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1057,7 +1199,8 @@ firm = ggboxplot(phyla_meta, x = "Group",
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "Firmicutes") 
-firm = ggpar(firm, legend = "right") + rremove("xlab") + 
+firm = ggpar(firm, legend = "right", font.y = 16,
+             font.legend = 16, font.ytickslab = 14) + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1078,7 +1221,8 @@ fuso = ggboxplot(phyla_meta, x = "Group",
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "Fusobacteria") 
-fuso = ggpar(fuso, legend = "right") + rremove("xlab") + 
+fuso = ggpar(fuso, legend = "right", font.y = 16,
+             font.legend = 16, font.ytickslab = 14) + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1099,7 +1243,8 @@ prot = ggboxplot(phyla_meta, x = "Group",
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "Proteobacteria") 
-prot = ggpar(prot, legend = "right") + rremove("xlab") + 
+prot = ggpar(prot, legend = "right", font.y = 16,
+             font.legend = 16, font.ytickslab = 14) + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1122,13 +1267,20 @@ tm7 = ggboxplot(phyla_meta, x = "Group",
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "TM7") 
-tm7 = ggpar(tm7, legend = "right") + rremove("xlab") + 
+tm7 = ggpar(tm7, legend = "right", font.y = 16,
+            font.legend = 16, font.ytickslab = 14) + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title")
 
 tiff(file="phyla_combined.tif", res=300, width=15, height=10, units="in")
-ggarrange(bact, cyan, firm, fuso, prot, tm7, nrow = 2, ncol = 3, 
+phyla_graph = ggarrange(bact, cyan, firm, fuso, prot, tm7, nrow = 2, ncol = 3, 
           common.legend = T, align = "h", legend = "right")
+phyla_graph
+dev.off()
+
+setEPS()
+postscript(file="phyla_combined.eps", width=15, height=10, paper = "special")
+phyla_graph
 dev.off()
 
 #Family differences ----
@@ -1324,15 +1476,15 @@ library(ggtext)
 library(vegan)
 library(cowplot)
 
-mds_otus_weighted<-metaMDS(weighted, k=2, trymax=499)
+mds_otus_weighted<-metaMDS(weighted_nounk, k=2, trymax=499)
 mds_otus_weighted_points<-mds_otus_weighted$points
-mds_otus_weighted_points2<-merge(x=mds_otus_weighted_points, y = metadata, 
+mds_otus_weighted_points2<-merge(x=mds_otus_weighted_points, y = metadata_nounk, 
                                  by.x = "row.names", by.y = "SampleID")
 
 
-mds_otus_unweighted<-metaMDS(unweighted, k=2, trymax=499)
+mds_otus_unweighted<-metaMDS(unweighted_nounk, k=2, trymax=499)
 mds_otus_unweighted_points<-mds_otus_unweighted$points
-mds_otus_unweighted_points2<-merge(x=mds_otus_unweighted_points, y = metadata, 
+mds_otus_unweighted_points2<-merge(x=mds_otus_unweighted_points, y = metadata_nounk, 
                                    by.x = "row.names", by.y = "SampleID")
 
 
@@ -1353,11 +1505,11 @@ w_taxa <- ggplot(mds_otus_weighted_points2,
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.115, R<sup>2</sup> = 2.3%<br>
-           <b>Group: p < 0.001, R<sup>2</sup> = 24.8%</b><br>
-           Age: p = 0.205, R<sup>2</sup> = 6.4%<br>
-           Sex: p = 0.171, R<sup>2</sup> = 3.6%<br>
-           Preservative: p = 0.162, R<sup>2</sup> = 2.0%", 
+           label = "Season: p = 0.167, R<sup>2</sup> = 2.2%<br>
+           <b>Group: p < 0.001, R<sup>2</sup> = 27.9%</b><br>
+           Age: p = 0.147, R<sup>2</sup> = 6.0%<br>
+           Sex: p = 0.164, R<sup>2</sup> = 2.1%<br>
+           Preservative: p = 0.129, R<sup>2</sup> = 2.5%", 
            x = -Inf, y = Inf, size = 5,
            hjust = 0, vjust = 1)
 w_taxa
@@ -1378,11 +1530,11 @@ uw_taxa <- ggplot(mds_otus_unweighted_points2,
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "<b>Season: p = 0.017, R<sup>2</sup> = 3.0%<br>
-           Group: p < 0.001, R<sup>2</sup> = 18.3%</b><br>
-           Age: p = 0.490, R<sup>2</sup> = 5.0%<br>
-           Sex: p = 0.290, R<sup>2</sup> = 2.9%<br>
-           <b>Preservative: p = 0.001, R<sup>2</sup> = 4.7%</b>", 
+           label = "<b>Season: p = 0.011, R<sup>2</sup> = 4.0%<br>
+           Group: p < 0.001, R<sup>2</sup> = 20.3%</b><br>
+           Age: p = 0.211, R<sup>2</sup> = 5.2%<br>
+           Sex: p = 0.162, R<sup>2</sup> = 1.9%<br>
+           <b>Preservative: p < 0.001, R<sup>2</sup> = 6.6%</b>", 
            x = -Inf, 
            y = Inf, 
            size = 5, hjust = 0, vjust = 1)
@@ -1397,9 +1549,15 @@ col1 = plot_grid(w_taxa + theme(legend.position = "none"),
 col2 = plot_grid(uw_taxa + theme(legend.position = "none"),
                  nrow = 1, ncol = 1, labels = c('B'),
                  label_size = 20)
-plot_grid(col1, col2, legend1, 
+nmds = plot_grid(col1, col2, legend1, 
           nrow = 1, ncol = 3, rel_widths = c(1.5, 1.5, 0.75), 
           align = "hv", axis = "t")
+nmds
+dev.off()
+
+setEPS()
+postscript(file="nmds_plot_combined_taxa_forpub.eps", width=18, height=8, paper = "special")
+nmds
 dev.off()
 
 #Taxa plots----

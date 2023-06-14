@@ -123,10 +123,11 @@ braygf <- ggplot(mds_otus_bray_gene_points2, aes(x = MDS1, y = MDS2,
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.518, 
-           R<sup>2</sup> = 2.2%<br>Group: p = 0.478, 
-           R<sup>2</sup> = 20.6%<br>Preservative: p = 0.337, 
-           R<sup>2</sup> = 3.9%", 
+           label = "Season: p = 0.534, 
+           R<sup>2</sup> = 2.1%<br>Group: p = 0.434, 
+           R<sup>2</sup> = 21.7%<br>Sex: p = 0.339, 
+           R<sup>2</sup> = 8.2%<br>Preservative: p = 0.283, 
+           R<sup>2</sup> = 4.4%", 
            x = -Inf, y = -Inf, size = 5,
            hjust = 0, vjust = 0)
 braygf
@@ -145,18 +146,18 @@ jaccgf <- ggplot(mds_otus_jaccard_gene_points2, aes(x = MDS1, y = MDS2,
   theme(axis.title.x=element_text(size=rel(1)), 
         axis.title.y=element_text(size=rel(1)),
         plot.title = element_text(size=rel(2)),
-        legend.title = element_text(size=rel(1.5)),
-        legend.text = element_text(size = rel(1))) + 
+        legend.title = element_text(size=rel(1.8)),
+        legend.text = element_text(size = rel(1.4))) + 
   ggtitle("Gene families") +
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Season, linetype = Season), 
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.067, 
-           r<sup>2</sup> = 7.4%<br><b>Group: p = 0.012, 
-           r<sup>2</sup> = 41.0%<br></b>Sex: p = 0.854,
-           r<sup>2</sup> = 3.9%<br>Preservative: 
-           p = 0.315, r<sup>2</sup> = 3.6%", 
+           label = "Season: p = 0.073, 
+           R<sup>2</sup> = 7.4%<br><b>Group: p = 0.013, 
+           R<sup>2</sup> = 41.0%<br></b>Sex: p = 0.849,
+           R<sup>2</sup> = 3.9%<br>Preservative: 
+           p = 0.311, R<sup>2</sup> = 3.6%", 
            x = -Inf, y = Inf, size = 5,
            hjust = 0, vjust = 1)
 jaccgf
@@ -182,10 +183,11 @@ braypa <- ggplot(mds_otus_bray_pa_points2, aes(x = MDS1, y = MDS2,
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.412, 
-           r<sup>2</sup> = 2.5%<br>Group: p = 0.500, 
-           r<sup>2</sup> = 19.2%<br>Preservative: 
-           p = 260, r<sup>2</sup> = 4.4%", 
+           label = "Season: p = 0.442, 
+           R<sup>2</sup> = 2.2%<br>Group: p = 0.427, 
+           R<sup>2</sup> = 21.0%<br>Sex: p = 0.321, 
+           R<sup>2</sup> = 8.1%<br>Preservative: 
+           p = 0.222, R<sup>2</sup> = 5.2%", 
            x = -Inf, y = -Inf, size = 5,
            hjust = 0, vjust = 0)
 braypa
@@ -211,11 +213,11 @@ jaccpa <- ggplot(mds_otus_jaccard_pa_points2, aes(x = MDS1, y = MDS2,
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.097, 
-           r<sup>2</sup> = 7.1%<br><b>Group: p = 0.034, 
-           r<sup>2</sup> = 40.6%<br></b>Sex: p = 0.879,
-           r<sup>2</sup> = 3.1%<br>Preservative: 
-           p = 0.247, r<sup>2</sup> = 4.2%", 
+           label = "Season: p = 0.098, 
+           R<sup>2</sup> = 7.1%<br><b>Group: p = 0.030, 
+           R<sup>2</sup> = 40.6%<br></b>Sex: p = 0.880,
+           R<sup>2</sup> = 3.1%<br>Preservative: 
+           p = 0.248, R<sup>2</sup> = 4.2%", 
            x = -Inf, y = Inf, size = 5,
            hjust = 0, vjust = 1)
 jaccpa
@@ -363,7 +365,8 @@ plot1 = ggboxplot(alpha_gene, x = "Group",
                   palette = "Set1", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Observed Gene Families") 
-plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+plot1 = ggpar(plot1, legend = "right", font.y = 16,
+              font.legend = 16, font.ytickslab = 14) + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + rremove("legend") + 
   stat_compare_means(label = "p.signif", 
@@ -379,12 +382,16 @@ col2 = plot_grid(jaccpa + theme(legend.position = "none"),
                  nrow = 1, ncol = 1)
 
 tiff(file="div_combined.tif", res=300, width=20, height=6, units="in")
-plot_grid(plot1, col1, col2, legend1, 
+shot_div = plot_grid(plot1, col1, col2, legend1, 
           nrow = 1, ncol = 4, rel_widths = c(1.5, 1.5, 1.5, 0.75), align = "hv", 
-          axis = "t")
+          axis = "t", labels = c("A", "B", "", ""))
+shot_div
 dev.off()
 
-
+setEPS()
+postscript(file="div_combined.eps", width=20, height=6, paper = "special")
+shot_div
+dev.off()
 
 
 #Pathway abundance GLMMs----

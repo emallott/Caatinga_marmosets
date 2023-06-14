@@ -1,5 +1,5 @@
 #Set up environment----
-setwd("/Users/elizabethmallott/Dropbox/Projects/Gut_microbiome/Caatinga_marmosets/diet_data")
+setwd("/Users/mallott/Dropbox/Projects/Gut_microbiome/Caatinga_marmosets/diet_data")
 
 library(tidyverse)
 library(ggpubr)
@@ -125,6 +125,11 @@ invert_family_group = invert_filtered_family %>%
                    ~sum(. > 0)/n(), .names = "{col}.freq"))
 write_csv(invert_family_group, "invert_season_group_freq.csv")
 
+invert_family = invert_filtered_family %>% 
+  summarize(across(Anostostomatidae:`Unclassified Lepidoptera`,
+                   ~sum(. > 0)/n(), .names = "{col}.freq"))
+write_csv(invert_family, "invert_family_freq_total.csv")
+
 plant_family_season = plant_filtered_family %>% 
   group_by(Season) %>% 
   summarize(across(Anacardiaceae:Vochysiaceae,
@@ -163,13 +168,19 @@ invert_rich = lm(invert_family_richness ~ Season + Group + Preservative, data = 
 Anova(invert_rich)
 summary(glht(invert_rich,linfct=mcp(Season="Tukey")))
 
+richness_season_summary = invert_family_richness %>% 
+  group_by(Season) %>% 
+  summarize(average = mean(invert_family_richness))
+
 inv_rich_season = ggboxplot(invert_family_richness, x = "Season",
                      y = "invert_family_richness", color = "Season",
                      add = "jitter", palette = c("gray", "black"),
                      ylab = "Family richness",
-                     title = "Arthopods",
+                     title = " ",
                      add.params = list(fill = "white"))
-inv_rich_season = ggpar(inv_rich_season, legend = "right") + rremove("xlab") + 
+inv_rich_season = ggpar(inv_rich_season, legend = "right", font.y = 16,
+                        font.legend = 16, font.ytickslab = 14,
+                        font.main = 17, ylim = c(0,24)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
                      comparisons = list(c("Wet", "Dry")),
@@ -180,8 +191,11 @@ inv_rich_group = ggboxplot(invert_family_richness, x = "Group",
                             y = "invert_family_richness", color = "Group",
                             add = "jitter", palette = "Set1",
                             ylab = "Family richness",
+                           title = "Arthopods",
                             add.params = list(fill = "white"))
-inv_rich_group = ggpar(inv_rich_group, legend = "right") + rremove("xlab") + 
+inv_rich_group = ggpar(inv_rich_group, legend = "right", font.y = 16,
+                       font.legend = 16, font.ytickslab = 14,
+                       font.main = 17, ylim = c(0,24)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
 
 
@@ -209,17 +223,22 @@ pla_rich_season = ggboxplot(plant_family_richness, x = "Season",
                             y = "plant_family_richness", color = "Season",
                             add = "jitter", palette = c("gray", "black"),
                             ylab = "Family richness",
-                            title = "Plants",
+                            title = " ",
                             add.params = list(fill = "white"))
-pla_rich_season = ggpar(pla_rich_season, legend = "right") + rremove("xlab") + 
+pla_rich_season = ggpar(pla_rich_season, legend = "right", font.y = 16,
+                        font.legend = 16, font.ytickslab = 14,
+                        font.main = 17, ylim = c(0,24)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
 
 pla_rich_group = ggboxplot(plant_family_richness, x = "Group",
                            y = "plant_family_richness", color = "Group",
                            add = "jitter", palette = "Set1",
                            ylab = "Family richness",
+                           title = "Plants",
                            add.params = list(fill = "white"))
-pla_rich_group = ggpar(pla_rich_group, legend = "right") + rremove("xlab") + 
+pla_rich_group = ggpar(pla_rich_group, legend = "right", font.y = 16,
+                       font.legend = 16, font.ytickslab = 14,
+                       font.main = 17, ylim = c(0,24)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title") + 
   stat_compare_means(comparisons = c("Princess","House"), label = "p.signif")
 
@@ -247,17 +266,22 @@ vert_rich_season = ggboxplot(vert_family_richness, x = "Season",
                             y = "vert_family_richness", color = "Season",
                             add = "jitter", palette = c("gray", "black"),
                             ylab = "Family richness",
-                            title = "Vertebrates",
+                            title = " ",
                             add.params = list(fill = "white"))
-vert_rich_season = ggpar(vert_rich_season, legend = "right") + rremove("xlab") + 
+vert_rich_season = ggpar(vert_rich_season, legend = "right", font.y = 16,
+                         font.legend = 16, font.ytickslab = 14,
+                         font.main = 17, ylim = c(0,24)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
 
 vert_rich_group = ggboxplot(vert_family_richness, x = "Group",
                            y = "vert_family_richness", color = "Group",
                            add = "jitter", palette = "Set1",
                            ylab = "Family richness",
+                           title = "Vertebrates",
                            add.params = list(fill = "white"))
-vert_rich_group = ggpar(vert_rich_group, legend = "right") + rremove("xlab") + 
+vert_rich_group = ggpar(vert_rich_group, legend = "right", font.y = 16,
+                        font.legend = 16, font.ytickslab = 14,
+                        font.main = 17, ylim = c(0,24)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
 
 
@@ -291,10 +315,19 @@ Anova(alpha_plant)
 invert_div$Group = as.factor(invert_div$Group)
 invert_div$Season = as.factor(invert_div$Season)
 invert_div$Preservative = as.factor(invert_div$Preservative)
+
 alpha_invert = lm(shannon_invert ~ Season + Group + Preservative, data = invert_div)
 Anova(alpha_invert)
 summary(glht(alpha_invert,linfct=mcp(Season="Tukey")))
 summary(glht(alpha_invert,linfct=mcp(Preservative="Tukey")))
+
+shannon_season_summary = invert_div %>% 
+  group_by(Season) %>% 
+  summarize(average = mean(shannon_invert))
+
+shannon_preservative_summary = invert_div %>% 
+  group_by(Preservative) %>% 
+  summarize(average = mean(shannon_invert))
 
 alpha_vert = lm(shannon_vert ~ Season + Group + Preservative, data = vert_div)
 Anova(alpha_vert)
@@ -304,7 +337,9 @@ plant_shan_season = ggboxplot(plant_div, x = "Season",
                              add = "jitter", palette = c("gray", "black"),
                              ylab = "Shannon diversity",
                              add.params = list(fill = "white"))
-plant_shan_season = ggpar(plant_shan_season, legend = "right") + rremove("xlab") + 
+plant_shan_season = ggpar(plant_shan_season, legend = "right", font.y = 16,
+                          font.legend = 16, font.ytickslab = 14,
+                          font.main = 17, ylim = c(0,4)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
 
 invert_shan_season = ggboxplot(invert_div, x = "Season",
@@ -312,7 +347,9 @@ invert_shan_season = ggboxplot(invert_div, x = "Season",
                               add = "jitter", palette = c("gray", "black"),
                               ylab = "Shannon diversity",
                               add.params = list(fill = "white"))
-invert_shan_season = ggpar(invert_shan_season, legend = "right") + rremove("xlab") + 
+invert_shan_season = ggpar(invert_shan_season, legend = "right", font.y = 16,
+                           font.legend = 16, font.ytickslab = 14,
+                           font.main = 17, ylim = c(0,4)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
                      comparisons = list(c("Wet", "Dry")),
@@ -325,7 +362,9 @@ vert_shan_season = ggboxplot(vert_div, x = "Season",
                                add = "jitter", palette = c("gray", "black"),
                                ylab = "Shannon diversity",
                                add.params = list(fill = "white"))
-vert_shan_season = ggpar(vert_shan_season, legend = "right") + rremove("xlab") + 
+vert_shan_season = ggpar(vert_shan_season, legend = "right", font.y = 16,
+                         font.legend = 16, font.ytickslab = 14,
+                         font.main = 17, ylim = c(0,4)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
 
 tiff(file="shannon_div_season.tif", res=300, width=10, height=3, units="in")
@@ -340,7 +379,9 @@ plant_shan_group = ggboxplot(plant_div, x = "Group",
                               add = "jitter", palette = "Set1",
                               ylab = "Shannon diversity",
                               add.params = list(fill = "white"))
-plant_shan_group = ggpar(plant_shan_group, legend = "right") + rremove("xlab") + 
+plant_shan_group = ggpar(plant_shan_group, legend = "right", font.y = 16,
+                         font.legend = 16, font.ytickslab = 14,
+                         font.main = 17, ylim = c(0,4)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
 
 invert_shan_group = ggboxplot(invert_div, x = "Group",
@@ -348,7 +389,9 @@ invert_shan_group = ggboxplot(invert_div, x = "Group",
                                add = "jitter", palette = "Set1",
                                ylab = "Shannon diversity",
                                add.params = list(fill = "white"))
-invert_shan_group = ggpar(invert_shan_group, legend = "right") + rremove("xlab") + 
+invert_shan_group = ggpar(invert_shan_group, legend = "right", font.y = 16,
+                          font.legend = 16, font.ytickslab = 14,
+                          font.main = 17, ylim = c(0,4)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title") 
 
 vert_shan_group = ggboxplot(vert_div, x = "Group",
@@ -356,7 +399,9 @@ vert_shan_group = ggboxplot(vert_div, x = "Group",
                              add = "jitter", palette = "Set1",
                              ylab = "Shannon diversity",
                              add.params = list(fill = "white"))
-vert_shan_group = ggpar(vert_shan_group, legend = "right") + rremove("xlab") + 
+vert_shan_group = ggpar(vert_shan_group, legend = "right", font.y = 16,
+                        font.legend = 16, font.ytickslab = 14,
+                        font.main = 17, ylim = c(0,4)) + rremove("xlab") + 
   rremove("x.text") + rremove("legend.title")
 
 tiff(file="shannon_div_group.tif", res=300, width=10, height=9, units="in")
@@ -373,17 +418,22 @@ tiff(file = "diversity_combo.tif", res = 300, width = 20, height = 12,
 plot1 = ggarrange(inv_rich_season, invert_shan_season, vert_rich_season, 
                   vert_shan_season,pla_rich_season, plant_shan_season,  
                   ncol = 2, nrow = 3, common.legend = T, legend = "right",
-                  align = "hv", labels = c("A", "B", "E", "F",
-                                           "I", "J"))
+                  align = "hv", labels = c("B", " ", "D", " ",
+                                           "F", " "))
 plot2 = ggarrange(inv_rich_group, invert_shan_group, vert_rich_group, 
                   vert_shan_group, pla_rich_group, plant_shan_group, 
                   ncol = 2, nrow = 3, common.legend = T, legend = "right",
-                  align = "hv", labels = c("C", "D", "G", "H", 
-                                           "K", "L"))
-ggarrange(plot1, plot2, ncol = 2, nrow = 1, widths = c(2,3),
+                  align = "hv", labels = c("A", " ", "C", " ", 
+                                           "E", " "))
+div_plot = ggarrange(plot2, plot1, ncol = 2, nrow = 1, widths = c(3,2),
           align = "hv")
+div_plot
 dev.off()
 
+setEPS()
+postscript(file="diversity_combo.eps", width=20, height=12, paper = "special")
+div_plot
+dev.off()
 
 #Proportion of reads to each dietary category ----
 
