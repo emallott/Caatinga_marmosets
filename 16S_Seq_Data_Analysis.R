@@ -11,6 +11,14 @@ unweighted_nounk = as.dist(read.table("unweighted-distance-matrix-nounk.tsv", he
 weighted_nounk = as.dist(read.table("weighted-distance-matrix-nounk.tsv", header = T))
 metadata_nounk = read.csv("caatinga_metadata_r_8956_nounk.csv", header=T)
 
+unweighted_monthcomp = as.dist(read.table("unweighted-distance-matrix-monthcomp.tsv", header = T))
+weighted_monthcomp = as.dist(read.table("weighted-distance-matrix-monthcomp.tsv", header = T))
+metadata_monthcomp = read.csv("caatinga_metadata_r_8956-monthcomp.csv", header=T)
+
+unweighted_dryonly = as.dist(read.table("unweighted-distance-matrix-dryonly.tsv", header = T))
+weighted_dryonly = as.dist(read.table("weighted-distance-matrix-dryonly.tsv", header = T))
+metadata_dryonly = read.csv("caatinga_metadata_r_8956-dryonly.csv", header=T)
+
 #Permanovas----
 library(vegan)
 
@@ -22,6 +30,9 @@ adonis2(unweighted~Season+Human_food+Age+Sex+Preservative, data=metadata,
         by = "margin", permutations = 5000)
 adonis2(unweighted~Season+Domestic_animal+Age+Sex+Preservative, data=metadata, 
         by = "margin", permutations = 5000)
+adonis2(unweighted~Year+Season+Group+Age+Sex+Preservative, data=metadata, 
+        by = "margin", permutations = 5000)
+anova(betadisper(unweighted, group = metadata$Year))
 anova(betadisper(unweighted, group = metadata$Season))
 anova(betadisper(unweighted, group = metadata$Group))
 anova(betadisper(unweighted, group = metadata$Human_food))
@@ -36,6 +47,9 @@ adonis2(weighted~Season+Human_food+Age+Sex+Preservative, data=metadata,
         by = "margin", permutations = 5000)
 adonis2(weighted~Season+Domestic_animal+Age+Sex+Preservative, data=metadata, 
         by = "margin", permutations = 5000)
+adonis2(weighted~Year+Season+Group+Age+Sex+Preservative, data=metadata, 
+        by = "margin", permutations = 5000)
+anova(betadisper(weighted, group = metadata$Year))
 anova(betadisper(weighted, group = metadata$Season))
 anova(betadisper(weighted, group = metadata$Group))
 anova(betadisper(weighted, group = metadata$Human_food))
@@ -50,6 +64,8 @@ adonis2(unweighted_nounk~Season+Human_food+Age+Sex+Preservative, data=metadata_n
         by = "margin", permutations = 5000)
 adonis2(unweighted_nounk~Season+Domestic_animal+Age+Sex+Preservative, data=metadata_nounk, 
         by = "margin", permutations = 5000)
+adonis2(unweighted_nounk~Year+Season+Group+Age+Sex+Preservative, data=metadata_nounk, 
+        by = "margin", permutations = 5000)
 anova(betadisper(unweighted_nounk, group = metadata_nounk$Season))
 anova(betadisper(unweighted_nounk, group = metadata_nounk$Group))
 anova(betadisper(unweighted_nounk, group = metadata_nounk$Human_food))
@@ -57,12 +73,15 @@ anova(betadisper(unweighted_nounk, group = metadata_nounk$Domestic_animal))
 anova(betadisper(unweighted_nounk, group = metadata_nounk$Age))
 anova(betadisper(unweighted_nounk, group = metadata_nounk$Sex))
 anova(betadisper(unweighted_nounk, group = metadata_nounk$Preservative))
+anova(betadisper(unweighted_nounk, group = metadata_nounk$Year))
 
 adonis2(weighted_nounk~Season+Group+Age+Sex+Preservative, data=metadata_nounk, 
         by = "margin", permutations = 5000)
 adonis2(weighted_nounk~Season+Human_food+Age+Sex+Preservative, data=metadata_nounk, 
         by = "margin", permutations = 5000)
 adonis2(weighted_nounk~Season+Domestic_animal+Age+Sex+Preservative, data=metadata_nounk, 
+        by = "margin", permutations = 5000)
+adonis2(weighted_nounk~Year+Season+Group+Age+Sex+Preservative, data=metadata_nounk, 
         by = "margin", permutations = 5000)
 anova(betadisper(weighted_nounk, group = metadata_nounk$Season))
 anova(betadisper(weighted_nounk, group = metadata_nounk$Group))
@@ -71,6 +90,26 @@ anova(betadisper(weighted_nounk, group = metadata_nounk$Domestic_animal))
 anova(betadisper(weighted_nounk, group = metadata_nounk$Age))
 anova(betadisper(weighted_nounk, group = metadata_nounk$Sex))
 anova(betadisper(weighted_nounk, group = metadata_nounk$Preservative))
+anova(betadisper(weighted_nounk, group = metadata_nounk$Year))
+
+adonis2(unweighted_monthcomp ~ Year + Season + Group + Preservative, 
+        data=metadata_monthcomp, 
+        by = "margin", permutations = 4999)
+pairwise.adonis(unweighted_monthcomp, metadata_monthcomp$SeasonYear)
+adonis2(unweighted_monthcomp ~ Year + Season + Group, 
+        data=metadata_monthcomp, 
+        by = "margin", permutations = 4999)
+pairwise.adonis(weighted_monthcomp, metadata_monthcomp$SeasonYear)
+
+
+adonis2(unweighted_dryonly ~ Year + Group + Preservative, 
+        data=metadata_dryonly, 
+        by = "margin", permutations = 4999)
+pairwise.adonis(unweighted_monthcomp, metadata_monthcomp$SeasonYear)
+adonis2(unweighted_dryonly ~ Year + Group + Preservative, 
+        data=metadata_dryonly, 
+        by = "margin", permutations = 4999)
+pairwise.adonis(weighted_monthcomp, metadata_monthcomp$SeasonYear)
 
 #Alpha diversity----
 faith = read.table("faithpd.tsv", header=T)
@@ -91,6 +130,7 @@ alpha$Age = as.factor(alpha$Age)
 alpha$Sex = as.factor(alpha$Sex)
 alpha$AgeSex = as.factor(alpha$AgeSex)
 alpha$Preservative = as.factor(alpha$Preservative)
+alpha$Year = as.factor(alpha$Year)
 
 alpha_nounk = alpha %>% 
   filter(Sex != "Unknown" & Age != "Unknown")
@@ -113,6 +153,12 @@ summary(f_full_nounk)
 Anova(f_full_nounk)
 summary(glht(f_full_nounk,linfct=mcp(Season="Tukey")))
 summary(glht(f_full_nounk,linfct=mcp(Preservative="Tukey")))
+
+f_full_nounk_year = lm(faith_pd ~ Year+Season+Group+Age+Sex+Preservative, 
+                  data = alpha_nounk)
+summary(f_full_nounk_year)
+Anova(f_full_nounk_year)
+summary(glht(f_full_nounk_year,linfct=mcp(Season="Tukey")))
 
 faith_preservative_summary = alpha_nounk %>% 
   group_by(Preservative) %>% 
@@ -156,6 +202,13 @@ o_full_nounk = lm(observed_features ~ Season+Group+Age+Sex+Preservative,
             data = alpha_nounk)
 summary(o_full_nounk)
 Anova(o_full_nounk)
+summary(glht(o_full_nounk,linfct=mcp(Group="Tukey")))
+
+o_full_nounk_year = lm(observed_features ~ Year+Season+Group+Age+Sex+Preservative, 
+                  data = alpha_nounk)
+summary(o_full_nounk_year)
+Anova(o_full_nounk_year)
+summary(glht(o_full_nounk_year,linfct=mcp(Group="Tukey")))
 
 o_full_nounk_agesex = lm(observed_features ~ Season+Group+AgeSex+Preservative, 
                   data = alpha_nounk)
@@ -191,6 +244,12 @@ s_full_nounk = lm(shannon_entropy ~ Season+Group+Age+Sex+Preservative,
 summary(s_full_nounk)
 Anova(s_full_nounk)
 summary(glht(s_full_nounk,linfct=mcp(Group="Tukey")))
+
+s_full_nounk_year = lm(shannon_entropy ~ Year+Season+Group+Age+Sex+Preservative, 
+                  data = alpha_nounk)
+summary(s_full_nounk_year)
+Anova(s_full_nounk_year)
+summary(glht(s_full_nounk_year,linfct=mcp(Group="Tukey")))
 
 s_full_human = lm(shannon_entropy ~ Season+Human_food+Age+Sex+Preservative, 
             data = alpha)
@@ -1490,7 +1549,7 @@ mds_otus_unweighted_points2<-merge(x=mds_otus_unweighted_points, y = metadata_no
 
 w_taxa <- ggplot(mds_otus_weighted_points2, 
                  aes(x = MDS1, y = MDS2, color = Group, 
-                     shape = Season)) +
+                     shape = Period)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
@@ -1500,12 +1559,12 @@ w_taxa <- ggplot(mds_otus_weighted_points2,
         legend.title = element_text(size=rel(2)),
         legend.text = element_text(size = rel(1.8))) + 
   ggtitle("Weighted UniFrac") +
-  stat_ellipse(aes(x = MDS1, y = MDS2, group = Season, 
-                   linetype = Season), 
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Period, 
+                   linetype = Period), 
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.167, R<sup>2</sup> = 2.2%<br>
+           label = "Period: p = 0.167, R<sup>2</sup> = 2.2%<br>
            <b>Group: p < 0.001, R<sup>2</sup> = 27.9%</b><br>
            Age: p = 0.147, R<sup>2</sup> = 6.0%<br>
            Sex: p = 0.164, R<sup>2</sup> = 2.1%<br>
@@ -1516,7 +1575,7 @@ w_taxa
 
 uw_taxa <- ggplot(mds_otus_unweighted_points2, 
                   aes(x = MDS1, y = MDS2, color = Group, 
-                      shape = Season)) +
+                      shape = Period)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
@@ -1526,11 +1585,11 @@ uw_taxa <- ggplot(mds_otus_unweighted_points2,
         legend.title = element_text(size=rel(2)),
         legend.text = element_text(size = rel(1.8))) + 
   ggtitle("Unweighted UniFrac") +
-  stat_ellipse(aes(x = MDS1, y = MDS2, group = Season, linetype = Season), 
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Period, linetype = Period), 
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "<b>Season: p = 0.011, R<sup>2</sup> = 4.0%<br>
+           label = "<b>Period: p = 0.011, R<sup>2</sup> = 4.0%<br>
            Group: p < 0.001, R<sup>2</sup> = 20.3%</b><br>
            Age: p = 0.211, R<sup>2</sup> = 5.2%<br>
            Sex: p = 0.162, R<sup>2</sup> = 1.9%<br>

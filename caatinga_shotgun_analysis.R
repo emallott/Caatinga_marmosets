@@ -23,6 +23,9 @@ adonis2(bray_gene ~ Season + Human_food + Sex + Preservative,
 adonis2(bray_gene ~ Season + Domestic_animal + Sex + Preservative, 
         data=metadata_gene, 
         by = "margin", permutations = 4999)
+adonis2(bray_gene ~ Year + Season + Group + Sex + Preservative, 
+        data=metadata_gene, 
+        by = "margin", permutations = 4999)
 
 anova(betadisper(bray_gene, group = metadata_gene$Season))
 anova(betadisper(bray_gene, group = metadata_gene$Group))
@@ -30,6 +33,7 @@ anova(betadisper(bray_gene, group = metadata_gene$Human_food))
 anova(betadisper(bray_gene, group = metadata_gene$Domestic_animal))
 anova(betadisper(bray_gene, group = metadata_gene$Sex))
 anova(betadisper(bray_gene, group = metadata_gene$Preservative))
+anova(betadisper(bray_gene, group = metadata_gene$Year))
 
 pairwise.adonis(bray_gene, factors = metadata_gene$Group, 
                 perm = 4999, 
@@ -44,6 +48,9 @@ adonis2(jaccard_gene ~ Season + Human_food + Sex +  Preservative,
 adonis2(jaccard_gene ~ Season + Domestic_animal + Sex +  Preservative, 
         data=metadata_gene, 
         by = "margin", permutations = 4999)
+adonis2(jaccard_gene ~ Year + Season + Group + Sex +  Preservative, 
+        data=metadata_gene, 
+        by = "margin", permutations = 4999)
 
 anova(betadisper(jaccard_gene, group = metadata_gene$Season))
 anova(betadisper(jaccard_gene, group = metadata_gene$Group))
@@ -51,6 +58,7 @@ anova(betadisper(jaccard_gene, group = metadata_gene$Human_food))
 anova(betadisper(jaccard_gene, group = metadata_gene$Domestic_animal))
 anova(betadisper(jaccard_gene, group = metadata_gene$Sex))
 anova(betadisper(jaccard_gene, group = metadata_gene$Preservative))
+anova(betadisper(jaccard_gene, group = metadata_gene$Year))
 
 pairwise.adonis(jaccard_gene, factors = metadata_gene$Group, 
                 perm = 4999, 
@@ -65,6 +73,9 @@ adonis2(bray_pa ~ Season + Human_food + Sex +  Preservative,
 adonis2(bray_pa ~ Season + Domestic_animal + Sex +  Preservative, 
         data=metadata_pa, 
         by = "margin", permutations = 4999)
+adonis2(bray_pa ~ Year + Season + Group + Sex +  Preservative, 
+        data=metadata_pa, 
+        by = "margin", permutations = 4999)
 
 anova(betadisper(bray_pa, group = metadata_pa$Season))
 anova(betadisper(bray_pa, group = metadata_pa$Group))
@@ -72,6 +83,7 @@ anova(betadisper(bray_pa, group = metadata_pa$Human_food))
 anova(betadisper(bray_pa, group = metadata_pa$Domestic_animal))
 anova(betadisper(bray_pa, group = metadata_pa$Sex))
 anova(betadisper(bray_pa, group = metadata_pa$Preservative))
+anova(betadisper(bray_pa, group = metadata_pa$Year))
 
 pairwise.adonis(bray_pa, factors = metadata_pa$Group, 
                 perm = 4999, 
@@ -86,6 +98,9 @@ adonis2(jaccard_pa ~ Season + Human_food + Sex +  Preservative,
 adonis2(jaccard_pa ~ Season + Domestic_animal + Sex +  Preservative, 
         data=metadata_pa, 
         by = "margin", permutations = 4999)
+adonis2(jaccard_pa ~ Year + Season + Group + Sex +  Preservative, 
+        data=metadata_pa, 
+        by = "margin", permutations = 4999)
 
 anova(betadisper(jaccard_pa, group = metadata_pa$Season))
 anova(betadisper(jaccard_pa, group = metadata_pa$Group))
@@ -93,6 +108,7 @@ anova(betadisper(jaccard_pa, group = metadata_pa$Human_food))
 anova(betadisper(jaccard_pa, group = metadata_pa$Domestic_animal))
 anova(betadisper(jaccard_pa, group = metadata_pa$Sex))
 anova(betadisper(jaccard_pa, group = metadata_pa$Preservative))
+anova(betadisper(jaccard_pa, group = metadata_pa$Year))
 
 pairwise.adonis(jaccard_pa, factors = metadata_pa$Group, 
                 perm = 4999, 
@@ -108,7 +124,7 @@ mds_otus_bray_gene_points2<-merge(x=mds_otus_bray_gene_points, y = metadata_gene
                                   by.x = "row.names", by.y = "SampleID")
 tiff(file="nmds_plot_bray_genefam_unstrat.tif", res=300, width=8, height=6, units="in")
 braygf <- ggplot(mds_otus_bray_gene_points2, aes(x = MDS1, y = MDS2, 
-                                                 color = Group, shape = Season)) +
+                                                 color = Group, shape = Period)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
@@ -118,12 +134,12 @@ braygf <- ggplot(mds_otus_bray_gene_points2, aes(x = MDS1, y = MDS2,
         legend.title = element_text(size=rel(1.5)),
         legend.text = element_text(size = rel(1))) + 
   ggtitle("Bray-Curtis:\nGene families") +
-  stat_ellipse(aes(x = MDS1, y = MDS2, group = Season, 
-                   linetype = Season), 
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Period, 
+                   linetype = Period), 
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.534, 
+           label = "Period: p = 0.534, 
            R<sup>2</sup> = 2.1%<br>Group: p = 0.434, 
            R<sup>2</sup> = 21.7%<br>Sex: p = 0.339, 
            R<sup>2</sup> = 8.2%<br>Preservative: p = 0.283, 
@@ -139,7 +155,7 @@ mds_otus_jaccard_gene_points2<-merge(x=mds_otus_jaccard_gene_points, y = metadat
                                      by.x = "row.names", by.y = "SampleID")
 tiff(file="nmds_plot_jaccard_genefam_unstrat.tif", res=300, width=8, height=6, units="in")
 jaccgf <- ggplot(mds_otus_jaccard_gene_points2, aes(x = MDS1, y = MDS2, 
-                                                    color = Group, shape = Season)) +
+                                                    color = Group, shape = Period)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
@@ -149,11 +165,11 @@ jaccgf <- ggplot(mds_otus_jaccard_gene_points2, aes(x = MDS1, y = MDS2,
         legend.title = element_text(size=rel(1.8)),
         legend.text = element_text(size = rel(1.4))) + 
   ggtitle("Gene families") +
-  stat_ellipse(aes(x = MDS1, y = MDS2, group = Season, linetype = Season), 
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Period, linetype = Period), 
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.073, 
+           label = "Period: p = 0.073, 
            R<sup>2</sup> = 7.4%<br><b>Group: p = 0.013, 
            R<sup>2</sup> = 41.0%<br></b>Sex: p = 0.849,
            R<sup>2</sup> = 3.9%<br>Preservative: 
@@ -169,7 +185,7 @@ mds_otus_bray_pa_points2<-merge(x=mds_otus_bray_pa_points, y = metadata_pa,
                                 by.x = "row.names", by.y = "SampleID")
 tiff(file="nmds_plot_bray_pathabund_unstrat.tif", res=300, width=8, height=6, units="in")
 braypa <- ggplot(mds_otus_bray_pa_points2, aes(x = MDS1, y = MDS2, 
-                                               color = Group, shape = Season)) +
+                                               color = Group, shape = Period)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
@@ -179,11 +195,11 @@ braypa <- ggplot(mds_otus_bray_pa_points2, aes(x = MDS1, y = MDS2,
         legend.title = element_text(size=rel(2)),
         legend.text = element_text(size = rel(1.8))) + 
   ggtitle("Bray-Curtis:\nPathway abundance") +
-  stat_ellipse(aes(x = MDS1, y = MDS2, group = Season, linetype = Season), 
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Period, linetype = Period), 
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.442, 
+           label = "Period: p = 0.442, 
            R<sup>2</sup> = 2.2%<br>Group: p = 0.427, 
            R<sup>2</sup> = 21.0%<br>Sex: p = 0.321, 
            R<sup>2</sup> = 8.1%<br>Preservative: 
@@ -199,7 +215,7 @@ mds_otus_jaccard_pa_points2<-merge(x=mds_otus_jaccard_pa_points, y = metadata_pa
                                    by.x = "row.names", by.y = "SampleID")
 tiff(file="nmds_plot_jaccard_pathabund_unstrat.tif", res=300, width=8, height=6, units="in")
 jaccpa <- ggplot(mds_otus_jaccard_pa_points2, aes(x = MDS1, y = MDS2, 
-                                                  color = Group, shape = Season)) +
+                                                  color = Group, shape = Period)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
@@ -209,11 +225,11 @@ jaccpa <- ggplot(mds_otus_jaccard_pa_points2, aes(x = MDS1, y = MDS2,
         legend.title = element_text(size=rel(1.5)),
         legend.text = element_text(size = rel(1))) + 
   ggtitle("Pathway Abundance") +
-  stat_ellipse(aes(x = MDS1, y = MDS2, group = Season, linetype = Season), 
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Period, linetype = Period), 
                type = "t", level = 0.9) + 
   scale_linetype_manual(values = c(1,2)) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Season: p = 0.098, 
+           label = "Period: p = 0.098, 
            R<sup>2</sup> = 7.1%<br><b>Group: p = 0.030, 
            R<sup>2</sup> = 40.6%<br></b>Sex: p = 0.880,
            R<sup>2</sup> = 3.1%<br>Preservative: 
@@ -291,6 +307,11 @@ sga <- lm(shannon_entropy ~ Season + Domestic_animal + Sex + Preservative, data 
 summary(sga)
 Anova(sga)
 
+sgy <- lm(shannon_entropy ~ Year + Season + Group + Sex + Preservative, data = alpha_gene)
+summary(sgy)
+Anova(sgy)
+summary(glht(sgysg,linfct=mcp(Season="Tukey")))
+
 eg <- lm(pielou_evenness ~ Season + Group + Sex + Preservative, data = alpha_gene)
 summary(eg)
 Anova(eg)
@@ -303,6 +324,10 @@ Anova(egh)
 ega <- lm(pielou_evenness ~ Season + Domestic_animal + Sex + Preservative, data = alpha_gene)
 summary(ega)
 Anova(ega)
+
+egy <- lm(pielou_evenness ~ Year + Season + Group + Sex + Preservative, data = alpha_gene)
+summary(egy)
+Anova(egy)
 
 og <- lm(observed_features ~ Season + Group + Sex + Preservative, data = alpha_gene)
 summary(og)
@@ -317,6 +342,10 @@ oga <- lm(observed_features ~ Season + Domestic_animal + Sex + Preservative, dat
 summary(oga)
 Anova(oga)
 
+ogy <- lm(observed_features ~ Year + Season + Group + Sex + Preservative, data = alpha_gene)
+summary(ogy)
+Anova(ogy)
+
 sp <- lm(shannon_entropy ~ Season + Group + Sex + Preservative, data = alpha_pa)
 summary(sp)
 Anova(sp)
@@ -329,6 +358,10 @@ Anova(sph)
 spa <- lm(shannon_entropy ~ Season + Domestic_animal + Sex + Preservative, data = alpha_pa)
 summary(spa)
 Anova(spa)
+
+spy <- lm(shannon_entropy ~ Year + Season + Group + Sex + Preservative, data = alpha_pa)
+summary(spy)
+Anova(spy)
 
 ep <- lm(pielou_evenness ~ Season + Group + Sex + Preservative, data = alpha_pa)
 summary(ep)
@@ -343,6 +376,10 @@ epa <- lm(pielou_evenness ~ Season + Domestic_animal + Sex + Preservative, data 
 summary(epa)
 Anova(epa)
 
+epy <- lm(pielou_evenness ~ Year + Season + Group + Sex + Preservative, data = alpha_pa)
+summary(epy)
+Anova(epy)
+
 op <- lm(observed_features ~ Season + Group + Sex + Preservative, data = alpha_pa)
 summary(op)
 Anova(op)
@@ -356,6 +393,10 @@ opa <- lm(observed_features ~ Season + Domestic_animal + Sex + Preservative, dat
 summary(opa)
 Anova(opa)
 summary(glht(opa,linfct=mcp(Season="Tukey")))
+
+opy <- lm(observed_features ~ Year + Season + Group + Sex + Preservative, data = alpha_pa)
+summary(opy)
+Anova(opy)
 
 #Diversity plots ----
 library(ggpubr)
@@ -384,7 +425,7 @@ col2 = plot_grid(jaccpa + theme(legend.position = "none"),
 tiff(file="div_combined.tif", res=300, width=20, height=6, units="in")
 shot_div = plot_grid(plot1, col1, col2, legend1, 
           nrow = 1, ncol = 4, rel_widths = c(1.5, 1.5, 1.5, 0.75), align = "hv", 
-          axis = "t", labels = c("A", "B", "", ""))
+          axis = "t", labels = c("A", "B", "", ""), label_size = 28)
 shot_div
 dev.off()
 
