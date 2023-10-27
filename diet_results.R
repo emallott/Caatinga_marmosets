@@ -520,3 +520,57 @@ ggarrange(plant_prop_group, invert_prop_group, vert_prop_group, ncol = 1, nrow=3
           labels = c("A", "B", "C"))
 
 dev.off()
+
+#Diet Proportion Plots----
+
+##Period----
+
+season_all = read_csv("sankey_plots_season.csv")
+season_all$Family <- factor(season_all$Family, 
+                            levels = unique(season_all$Family))
+
+prop_season = ggplot(season_all, aes(x=Period, y=Family)) +
+  geom_point(aes(size = Proportion, color = `Diet component`)) +
+  theme_classic() +
+  theme(axis.text.y = element_text(size = 10, color = "black"),
+    axis.text.x = element_text(size = 10, color = "black", angle = 90),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.title = element_text(face = "bold",size = 14, color = "black"),
+    legend.text = element_text(face = "plain",size = 12, color = "black")) +
+  labs(color="Diet component") +
+  scale_color_manual(values=c("#2171b5","#807dba","#67000d"))+
+  scale_size_continuous(range = c(-0.4,3))
+
+##Group----
+
+group_all = read_csv("sankey_plots_group.csv")
+group_all$Family <- factor(group_all$Family, 
+                            levels = unique(group_all$Family))
+
+prop_group = ggplot(group_all, aes(x=Group, y=Family)) +
+  geom_point(aes(size = Proportion, color = `Diet component`)) +
+  theme_classic() +
+  theme(axis.text.y = element_text(size = 10, color = "black"),
+        axis.text.x = element_text(size = 10, color = "black", angle = 90),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        legend.title = element_text(face = "bold",size = 14, color = "black"),
+        legend.text = element_text(face = "plain",size = 12, color = "black")) +
+  labs(color="Diet component") +
+  scale_color_manual(values=c("#2171b5","#807dba","#67000d"))+
+  scale_size_continuous(range = c(-0.4,3))
+
+##Combo----
+prop_plot = ggarrange(prop_season, prop_group,  
+                  ncol = 2, common.legend = T, legend = "right",
+                  align = "hv", widths = c(1.5, 2))
+prop_plot
+
+setEPS()
+postscript(file="proportion_combo.eps", width=8, height=10, paper = "special")
+prop_plot
+dev.off()
+
