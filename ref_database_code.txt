@@ -1,0 +1,20 @@
+#This is code to get the full EMBL database - ignore and use what you have!
+
+wget -nH --cut-dirs=5 -A rel_std_\*.dat.gz -R rel_std_hum_\*.dat.gz,rel_std_env_\*.dat.gz -m ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+
+#I imported my taxonomic database into a separate DMS because I was building multiple reference databases - you can import directly into your combined_samples_dms
+
+obi import --embl /Users/elizabethmallott/EMBL /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/embl_refs
+
+obi import --taxdump /Users/elizabethmallott/taxdump.tar.gz /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/taxonomy/ncbi_tax
+
+obi ecopcr -e 3 -l 25 -L 200 -F GGGCAATCCTGAGCCAA -R CCATTGAGTCTCTGCACCTATC --taxonomy /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/taxonomy/ncbi_tax /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/embl_refs /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_refs
+
+obi grep --require-rank=species --require-rank=genus --require-rank=family --taxonomy /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/taxonomy/ncbi_tax /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_refs /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_refs_clean
+
+obi uniq --taxonomy /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/taxonomy/ncbi_tax /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_refs_clean /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_refs_uniq
+
+obi grep --require-rank=family --taxonomy /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/taxonomy/ncbi_tax /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_refs_uniq /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_refs_uniq_clean
+
+obi build_ref_db -t 0.97 --taxonomy /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/taxonomy/ncbi_tax /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_refs_uniq_clean /Users/elizabethmallott/Dropbox/Projects/gut_microbiome/Caatinga_marmosets/diet_data/taxonomy/081720_trnl_db_97
