@@ -189,7 +189,8 @@ inv_rich_season = ggpar(inv_rich_season, legend = "right", font.y = 16,
 
 inv_rich_group = ggboxplot(invert_family_richness, x = "Group",
                             y = "invert_family_richness", color = "Group",
-                            add = "jitter", palette = "Set1",
+                            add = "jitter", palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                                                        "#97CE2F", "#616161", "#FCB076", "#E784C1"),
                             ylab = "Family richness",
                            title = "Arthopods",
                             add.params = list(fill = "white"))
@@ -232,7 +233,8 @@ pla_rich_season = ggpar(pla_rich_season, legend = "right", font.y = 16,
 
 pla_rich_group = ggboxplot(plant_family_richness, x = "Group",
                            y = "plant_family_richness", color = "Group",
-                           add = "jitter", palette = "Set1",
+                           add = "jitter", palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                                                       "#97CE2F", "#616161", "#FCB076", "#E784C1"),
                            ylab = "Family richness",
                            title = "Plants",
                            add.params = list(fill = "white"))
@@ -275,7 +277,8 @@ vert_rich_season = ggpar(vert_rich_season, legend = "right", font.y = 16,
 
 vert_rich_group = ggboxplot(vert_family_richness, x = "Group",
                            y = "vert_family_richness", color = "Group",
-                           add = "jitter", palette = "Set1",
+                           add = "jitter", palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                                                       "#97CE2F", "#616161", "#FCB076", "#E784C1"),
                            ylab = "Family richness",
                            title = "Vertebrates",
                            add.params = list(fill = "white"))
@@ -376,7 +379,8 @@ dev.off()
 
 plant_shan_group = ggboxplot(plant_div, x = "Group",
                               y = "shannon_plant", color = "Group",
-                              add = "jitter", palette = "Set1",
+                              add = "jitter", palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                                                          "#97CE2F", "#616161", "#FCB076", "#E784C1"),
                               ylab = "Shannon diversity",
                               add.params = list(fill = "white"))
 plant_shan_group = ggpar(plant_shan_group, legend = "right", font.y = 16,
@@ -386,7 +390,8 @@ plant_shan_group = ggpar(plant_shan_group, legend = "right", font.y = 16,
 
 invert_shan_group = ggboxplot(invert_div, x = "Group",
                                y = "shannon_invert", color = "Group",
-                               add = "jitter", palette = "Set1",
+                               add = "jitter", palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                                                           "#97CE2F", "#616161", "#FCB076", "#E784C1"),
                                ylab = "Shannon diversity",
                                add.params = list(fill = "white"))
 invert_shan_group = ggpar(invert_shan_group, legend = "right", font.y = 16,
@@ -396,7 +401,8 @@ invert_shan_group = ggpar(invert_shan_group, legend = "right", font.y = 16,
 
 vert_shan_group = ggboxplot(vert_div, x = "Group",
                              y = "shannon_vert", color = "Group",
-                             add = "jitter", palette = "Set1",
+                             add = "jitter", palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                                                         "#97CE2F", "#616161", "#FCB076", "#E784C1"),
                              ylab = "Shannon diversity",
                              add.params = list(fill = "white"))
 vert_shan_group = ggpar(vert_shan_group, legend = "right", font.y = 16,
@@ -534,13 +540,13 @@ prop_season = ggplot(season_all, aes(x=Period, y=Family)) +
   theme_classic() +
   theme(axis.text.y = element_text(size = 10, color = "black"),
     axis.text.x = element_text(size = 10, color = "black", angle = 90),
-    axis.title.x = element_blank(),
+    axis.title.x = element_text(size = 16, color = "black"),
     axis.title.y = element_blank(),
     axis.ticks.x = element_blank(),
     legend.title = element_text(face = "bold",size = 14, color = "black"),
     legend.text = element_text(face = "plain",size = 12, color = "black")) +
   labs(color="Diet component") +
-  scale_color_manual(values=c("#2171b5","#807dba","#67000d"))+
+  scale_color_manual(values=c("#7DCCFF","#43BA8F","#CC79A7"))+
   scale_size_continuous(range = c(-0.4,3))
 
 ##Group----
@@ -554,19 +560,19 @@ prop_group = ggplot(group_all, aes(x=Group, y=Family)) +
   theme_classic() +
   theme(axis.text.y = element_text(size = 10, color = "black"),
         axis.text.x = element_text(size = 10, color = "black", angle = 90),
-        axis.title.x = element_blank(),
+        axis.title.x = element_text(size = 16, color = "black"),
         axis.title.y = element_blank(),
         axis.ticks.x = element_blank(),
         legend.title = element_text(face = "bold",size = 14, color = "black"),
         legend.text = element_text(face = "plain",size = 12, color = "black")) +
   labs(color="Diet component") +
-  scale_color_manual(values=c("#2171b5","#807dba","#67000d"))+
+  scale_color_manual(values=c("#7DCCFF","#43BA8F","#CC79A7"))+
   scale_size_continuous(range = c(-0.4,3))
 
 ##Combo----
 prop_plot = ggarrange(prop_season, prop_group,  
                   ncol = 2, common.legend = T, legend = "right",
-                  align = "hv", widths = c(1.5, 2))
+                  align = "hv", widths = c(1.5, 2), labels = c("A", "B"))
 prop_plot
 
 setEPS()
@@ -574,3 +580,75 @@ postscript(file="proportion_combo.eps", width=8, height=10, paper = "special")
 prop_plot
 dev.off()
 
+tiff(file="proportion_combo.tif", res=300, width=8, height=10, units="in")
+prop_plot
+dev.off()
+
+# PERMANOVAs ----
+
+invert_filtered_div_nounk = invert_filtered_div %>% 
+  filter(Sex != "Unknown" & Age != "Unknown")
+plant_filtered_div_nounk = plant_filtered_div %>% 
+  filter(Sex != "Unknown" & Age != "Unknown")
+vert_filtered_div_nounk = vert_filtered_div %>% 
+  filter(Sex != "Unknown" & Age != "Unknown")
+
+invert_bray = vegdist(invert_filtered_div_nounk[,2:465], method = "bray")
+invert_jaccard = vegdist(invert_filtered_div_nounk[,2:465], 
+                         method = "jaccard", binary = T)
+plant_bray = vegdist(plant_filtered_div_nounk[,2:1876], method = "bray")
+plant_jaccard = vegdist(plant_filtered_div_nounk[,2:1876], 
+                         method = "jaccard", binary = T)
+vert_bray = vegdist(vert_filtered_div_nounk[,2:787], method = "bray")
+vert_jaccard = vegdist(vert_filtered_div_nounk[,2:787], 
+                        method = "jaccard", binary = T)
+
+set.seed(1018)
+
+adonis2(invert_bray~Season+Group+Age+Sex+Preservative, data=invert_filtered_div_nounk, 
+        by = "margin", permutations = 5000)
+anova(betadisper(invert_bray, group = invert_filtered_div_nounk$Season))
+anova(betadisper(invert_bray, group = invert_filtered_div_nounk$Group))
+anova(betadisper(invert_bray, group = invert_filtered_div_nounk$Age))
+anova(betadisper(invert_bray, group = invert_filtered_div_nounk$Sex))
+anova(betadisper(invert_bray, group = invert_filtered_div_nounk$Preservative))
+
+adonis2(invert_jaccard~Season+Group+Age+Sex+Preservative, data=invert_filtered_div_nounk, 
+        by = "margin", permutations = 5000)
+anova(betadisper(invert_jaccard, group = invert_filtered_div_nounk$Season))
+anova(betadisper(invert_jaccard, group = invert_filtered_div_nounk$Group))
+anova(betadisper(invert_jaccard, group = invert_filtered_div_nounk$Age))
+anova(betadisper(invert_jaccard, group = invert_filtered_div_nounk$Sex))
+anova(betadisper(invert_jaccard, group = invert_filtered_div_nounk$Preservative))
+
+adonis2(plant_bray~Season+Group+Age+Sex+Preservative, data=plant_filtered_div_nounk, 
+        by = "margin", permutations = 5000)
+anova(betadisper(plant_bray, group = plant_filtered_div_nounk$Season))
+anova(betadisper(plant_bray, group = plant_filtered_div_nounk$Group))
+anova(betadisper(plant_bray, group = plant_filtered_div_nounk$Age))
+anova(betadisper(plant_bray, group = plant_filtered_div_nounk$Sex))
+anova(betadisper(plant_bray, group = plant_filtered_div_nounk$Preservative))
+
+adonis2(plant_jaccard~Season+Group+Age+Sex+Preservative, data=plant_filtered_div_nounk, 
+        by = "margin", permutations = 5000)
+anova(betadisper(plant_jaccard, group = plant_filtered_div_nounk$Season))
+anova(betadisper(plant_jaccard, group = plant_filtered_div_nounk$Group))
+anova(betadisper(plant_jaccard, group = plant_filtered_div_nounk$Age))
+anova(betadisper(plant_jaccard, group = plant_filtered_div_nounk$Sex))
+anova(betadisper(plant_jaccard, group = plant_filtered_div_nounk$Preservative))
+
+adonis2(vert_bray~Season+Group+Age+Sex+Preservative, data=vert_filtered_div_nounk, 
+        by = "margin", permutations = 5000)
+anova(betadisper(vert_bray, group = vert_filtered_div_nounk$Season))
+anova(betadisper(vert_bray, group = vert_filtered_div_nounk$Group))
+anova(betadisper(vert_bray, group = vert_filtered_div_nounk$Age))
+anova(betadisper(vert_bray, group = vert_filtered_div_nounk$Sex))
+anova(betadisper(vert_bray, group = vert_filtered_div_nounk$Preservative))
+
+adonis2(vert_jaccard~Season+Group+Age+Sex+Preservative, data=vert_filtered_div_nounk, 
+        by = "margin", permutations = 5000)
+anova(betadisper(vert_jaccard, group = vert_filtered_div_nounk$Season))
+anova(betadisper(vert_jaccard, group = vert_filtered_div_nounk$Group))
+anova(betadisper(vert_jaccard, group = vert_filtered_div_nounk$Age))
+anova(betadisper(vert_jaccard, group = vert_filtered_div_nounk$Sex))
+anova(betadisper(vert_jaccard, group = vert_filtered_div_nounk$Preservative))

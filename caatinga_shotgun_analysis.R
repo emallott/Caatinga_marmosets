@@ -14,7 +14,7 @@ jaccard_pa = as.dist(read.table("jaccard_pathabund_unstrat.tsv", header = T))
 metadata_gene = read.csv("caatinga_shotgun_gf_metadata.csv", header = T)
 metadata_pa = read.csv("caatinga_shotgun_metadata.csv", header = T)
 
-adonis2(bray_gene ~ Season + Group + Sex + Preservative, 
+adonis2(bray_gene ~ Period + Group + Sex + Preservative, 
         data=metadata_gene, 
         by = "margin", permutations = 4999)
 adonis2(bray_gene ~ Season + Human_food + Sex + Preservative, 
@@ -118,6 +118,7 @@ pairwise.adonis(jaccard_pa, factors = metadata_pa$Group,
 library(ggplot2)
 library(ggtext)
 
+set.seed(1018)
 mds_otus_bray_gene<-metaMDS(bray_gene, k=2, trymax=499)
 mds_otus_bray_gene_points<-mds_otus_bray_gene$points
 mds_otus_bray_gene_points2<-merge(x=mds_otus_bray_gene_points, y = metadata_gene, 
@@ -125,7 +126,8 @@ mds_otus_bray_gene_points2<-merge(x=mds_otus_bray_gene_points, y = metadata_gene
 tiff(file="nmds_plot_bray_genefam_unstrat.tif", res=300, width=8, height=6, units="in")
 braygf <- ggplot(mds_otus_bray_gene_points2, aes(x = MDS1, y = MDS2, 
                                                  color = Group, shape = Period)) +
-  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  geom_point(size=3) + scale_color_manual(values = c("#7D3560", "#148F77", "#098BD9", 
+                                                     "#97CE2F", "#616161", "#FCB076", "#E784C1")) +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(1)), 
@@ -156,7 +158,8 @@ mds_otus_jaccard_gene_points2<-merge(x=mds_otus_jaccard_gene_points, y = metadat
 tiff(file="nmds_plot_jaccard_genefam_unstrat.tif", res=300, width=8, height=6, units="in")
 jaccgf <- ggplot(mds_otus_jaccard_gene_points2, aes(x = MDS1, y = MDS2, 
                                                     color = Group, shape = Period)) +
-  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  geom_point(size=3) + scale_color_manual(values = c("#7D3560", "#148F77", "#098BD9", 
+                                                     "#97CE2F", "#616161", "#FCB076", "#E784C1")) +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(1)), 
@@ -186,7 +189,8 @@ mds_otus_bray_pa_points2<-merge(x=mds_otus_bray_pa_points, y = metadata_pa,
 tiff(file="nmds_plot_bray_pathabund_unstrat.tif", res=300, width=8, height=6, units="in")
 braypa <- ggplot(mds_otus_bray_pa_points2, aes(x = MDS1, y = MDS2, 
                                                color = Group, shape = Period)) +
-  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  geom_point(size=3) + scale_color_manual(values = c("#7D3560", "#148F77", "#098BD9", 
+                                                     "#97CE2F", "#616161", "#FCB076", "#E784C1")) +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(2)), 
@@ -216,7 +220,8 @@ mds_otus_jaccard_pa_points2<-merge(x=mds_otus_jaccard_pa_points, y = metadata_pa
 tiff(file="nmds_plot_jaccard_pathabund_unstrat.tif", res=300, width=8, height=6, units="in")
 jaccpa <- ggplot(mds_otus_jaccard_pa_points2, aes(x = MDS1, y = MDS2, 
                                                   color = Group, shape = Period)) +
-  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  geom_point(size=3) + scale_color_manual(values = c("#7D3560", "#148F77", "#098BD9",
+                                                     "#97CE2F", "#616161", "#FCB076", "#E784C1")) +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(1)), 
@@ -403,7 +408,9 @@ library(ggpubr)
 
 plot1 = ggboxplot(alpha_gene, x = "Group", 
                   y = "observed_features", color = "Group", 
-                  palette = "Set1", add = "jitter", 
+                  palette = c("#7D3560", "#148F77", "#098BD9",
+                              "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                  add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Observed Gene Families") 
 plot1 = ggpar(plot1, legend = "right", font.y = 16,

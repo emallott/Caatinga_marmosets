@@ -268,7 +268,9 @@ library(ggpubr)
 
 plot1 = ggboxplot(alpha_nounk, x = "Group", 
                   y = "faith_pd", color = "Group", 
-                  palette = "Set1", add = "jitter", 
+                  palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                              "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                  add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Faith's Phylogenetic Diversity") 
 plot1 = ggpar(plot1, legend = "right", font.y = 16,
@@ -279,7 +281,9 @@ plot1 = ggpar(plot1, legend = "right", font.y = 16,
 
 plot2 = ggboxplot(alpha_nounk, x = "Group", 
                   y = "observed_features", color = "Group", 
-                  palette = "Set1", add = "jitter", 
+                  palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                              "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                  add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Observed ASVs") 
 plot2 = ggpar(plot2, legend = "right", font.y = 16,
@@ -290,7 +294,9 @@ plot2 = ggpar(plot2, legend = "right", font.y = 16,
 
 plot3 = ggboxplot(alpha_nounk, x = "Group", 
                   y = "shannon_entropy", color = "Group", 
-                  palette = "Set1", add = "jitter", 
+                  palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                              "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                  add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Shannon Diversity") 
 plot3 = ggpar(plot3, legend = "right", font.y = 16,
@@ -383,20 +389,27 @@ alpha_plot = ggarrange(ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3,
           ggarrange(ggarrange(plot4, plot5, plot6, 
                     nrow = 1, ncol = 3, 
                     common.legend = T, align = "h", 
-                    legend = "right"),
-                    ggarrange(plot7, plot8, plot9, 
-                              nrow = 1, ncol = 3, 
-                              common.legend = T, align = "h", 
-                              legend = "right"),
-                    nrow = 1, ncol = 2,
-                    align = "h", labels = c("B", "C")),
+                    legend = "right")),
           nrow = 2, ncol = 1, align = "hv",
-          labels = c("A", ""))
+          labels = c("A", "B"))
+alpha_plot
 dev.off()
 
 setEPS()
 postscript(file="alpha_combined.eps", width=15, height=9, paper = "special")
 alpha_plot
+dev.off()
+
+tiff(file="alpha_preservative.tif", res=300, width=7, height=4.5, units="in")
+alpha_plot_p = ggarrange(plot7, plot8, plot9, nrow = 1, ncol = 3, 
+                                           common.legend = T, align = "h", 
+                                           legend = "right")
+alpha_plot_p
+dev.off()
+
+setEPS()
+postscript(file="alpha_preservative.eps", width=7, height=4.5, paper = "special")
+alpha_plot_p
 dev.off()
 
 #Phyla differences----
@@ -1215,10 +1228,14 @@ library(ggpubr)
 
 phyla_t = read_tsv("phyla-table-full-t.txt")
 phyla_meta = metadata_full %>% inner_join(phyla_t)
+phyla_meta$Group = factor(phyla_meta$Group, levels = c("Algaroba", "Coqueiro",
+                             "Cow", "F group", "House", "Key", "Princess", "Road"))
 
 bact = ggboxplot(phyla_meta, x = "Group", 
                   y = "Bacteroidetes", color = "Group", 
-                  palette = "Set1", add = "jitter", 
+                  palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                              "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                 add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Relative Abundance", 
                  title = "Bacteroidetes") 
@@ -1233,7 +1250,9 @@ bact = ggpar(bact, legend = "right", font.y = 16,
 
 cyan = ggboxplot(phyla_meta, x = "Group", 
                  y = "Cyanobacteria", color = "Group", 
-                 palette = "Set1", add = "jitter", 
+                 palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                             "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                 add = "jitter", 
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "Cyanobacteria") 
@@ -1254,7 +1273,9 @@ cyan = ggpar(cyan, legend = "right", font.y = 16,
 
 firm = ggboxplot(phyla_meta, x = "Group", 
                  y = "Firmicutes", color = "Group", 
-                 palette = "Set1", add = "jitter", 
+                 palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                             "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                 add = "jitter", 
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "Firmicutes") 
@@ -1276,7 +1297,9 @@ firm = ggpar(firm, legend = "right", font.y = 16,
 
 fuso = ggboxplot(phyla_meta, x = "Group", 
                  y = "Fusobacteria", color = "Group", 
-                 palette = "Set1", add = "jitter", 
+                 palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                             "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                 add = "jitter", 
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "Fusobacteria") 
@@ -1298,7 +1321,9 @@ fuso = ggpar(fuso, legend = "right", font.y = 16,
 
 prot = ggboxplot(phyla_meta, x = "Group", 
                  y = "Proteobacteria", color = "Group", 
-                 palette = "Set1", add = "jitter", 
+                 palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                             "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                 add = "jitter", 
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "Proteobacteria") 
@@ -1322,7 +1347,9 @@ prot = ggpar(prot, legend = "right", font.y = 16,
 
 tm7 = ggboxplot(phyla_meta, x = "Group", 
                  y = "TM7", color = "Group", 
-                 palette = "Set1", add = "jitter", 
+                 palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                             "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                add = "jitter", 
                  add.params = list(fill = "white"), 
                  ylab = "Relative Abundance", 
                  title = "TM7") 
@@ -1535,6 +1562,7 @@ library(ggtext)
 library(vegan)
 library(cowplot)
 
+set.seed(1018)
 mds_otus_weighted<-metaMDS(weighted_nounk, k=2, trymax=499)
 mds_otus_weighted_points<-mds_otus_weighted$points
 mds_otus_weighted_points2<-merge(x=mds_otus_weighted_points, y = metadata_nounk, 
@@ -1550,7 +1578,8 @@ mds_otus_unweighted_points2<-merge(x=mds_otus_unweighted_points, y = metadata_no
 w_taxa <- ggplot(mds_otus_weighted_points2, 
                  aes(x = MDS1, y = MDS2, color = Group, 
                      shape = Period)) +
-  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  geom_point(size=4) + scale_color_manual(values = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+               "#97CE2F", "#616161", "#FCB076", "#E784C1")) +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(2)), 
@@ -1576,7 +1605,8 @@ w_taxa
 uw_taxa <- ggplot(mds_otus_unweighted_points2, 
                   aes(x = MDS1, y = MDS2, color = Group, 
                       shape = Period)) +
-  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  geom_point(size=4) + scale_color_manual(values = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                                                     "#97CE2F", "#616161", "#FCB076", "#E784C1")) +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(2)), 
@@ -1604,10 +1634,10 @@ tiff(file = "nmds_plot_combined_taxa_forpub.tif",
 legend1 = get_legend(w_taxa + theme(legend.box.margin = margin(0, 0, 0, 12)))
 col1 = plot_grid(w_taxa + theme(legend.position = "none"),
                  nrow = 1, ncol = 1, labels = c('A'), 
-                 label_size = 20)
+                 label_size = 32)
 col2 = plot_grid(uw_taxa + theme(legend.position = "none"),
                  nrow = 1, ncol = 1, labels = c('B'),
-                 label_size = 20)
+                 label_size = 32)
 nmds = plot_grid(col1, col2, legend1, 
           nrow = 1, ncol = 3, rel_widths = c(1.5, 1.5, 0.75), 
           align = "hv", axis = "t")
@@ -1626,7 +1656,9 @@ library(ggpubr)
 tiff(file="firm_group.tif", res=150, width=8, height=4, units="in")
 plot1 = ggviolin(phyla, x = "Group", 
                  y = "Relative_Firmicutes", fill = "Group", 
-                 palette = "Set1", add = "boxplot", 
+                 palette = c("#7D3560", "#148F77", "#098BD9", "#C17754",
+                             "#97CE2F", "#616161", "#FCB076", "#E784C1"), 
+                 add = "boxplot", 
                  add.params = list(fill = "white"), ylab = "Relative Firmicutes") 
 ggpar(plot1, legend = "right") + rremove("xlab") + rremove("x.text") + rremove("legend.title")
 dev.off()
